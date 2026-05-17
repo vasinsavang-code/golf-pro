@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#0a1a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Golf Pro">
+<link rel="manifest" href="manifest.json">
+<title>Golf Pro V5.4</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sarabun:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-dark: #0a1a0f;
+  --green-deep: #0f2d18;
+  --green-mid: #1a4d28;
+  --green-main: #16a34a;
+  --green-bright: #22c55e;
+  --green-light: #86efac;
+  --gold: #f59e0b;
+  --gold-light: #fcd34d;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --white: #f8fafc;
+  --gray: #94a3b8;
+  --gray-light: #e2e8f0;
+  --surface: #111f16;
+  --surface2: #162a1c;
+  --surface3: #1e3a27;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Sarabun', sans-serif;
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--green-dark);
+  color: var(--white);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== TOP BAR ===== */
+.topbar {
+  background: linear-gradient(135deg, var(--green-deep) 0%, var(--green-mid) 100%);
+  border-bottom: 1px solid rgba(34,197,94,0.2);
+  padding: 0 16px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.topbar-logo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 2px;
+  background: linear-gradient(135deg, var(--green-bright), var(--gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.carry-badge {
+  background: var(--gold);
+  color: #000;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 1px;
+  animation: pulse 1.5s infinite;
+  display: none;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+/* ===== BOTTOM NAV ===== */
+.bottomnav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--green-deep);
+  border-top: 1px solid rgba(34,197,94,0.2);
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 4px 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  gap: 3px;
+  border: none;
+  background: none;
+  color: var(--gray);
+}
+.nav-item.active { color: var(--green-bright); }
+.nav-item svg { width: 22px; height: 22px; }
+.nav-label { font-size: 10px; font-family: var(--font-body); font-weight: 600; }
+.nav-item.active .nav-label { color: var(--green-bright); }
+
+/* ===== VIEWS ===== */
+.view { display: none; padding: 16px; padding-bottom: 90px; }
+.view.active { display: block; }
+
+/* ===== CARDS ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-header {
+  font-family: var(--font-display);
+  font-size: 18px;
+  letter-spacing: 1px;
+  color: var(--green-bright);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ===== SECTION TITLE ===== */
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: 2px;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+.section-sub {
+  font-size: 12px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  letter-spacing: 0.5px;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--green-main), var(--green-bright));
+  color: #000;
+}
+.btn-secondary {
+  background: var(--surface3);
+  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-danger {
+  background: var(--red);
+  color: #fff;
+}
+.btn-gold {
+  background: linear-gradient(135deg, #b45309, var(--gold));
+  color: #000;
+}
+
+/* ===== FORM ELEMENTS ===== */
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--gray);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.form-input {
+  width: 100%;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--green-main); }
+.form-input option { background: var(--surface); }
+
+/* ===== TOGGLE BUTTONS ===== */
+.toggle-group {
+  display: grid;
+  gap: 8px;
+}
+.toggle-group.cols-2 { grid-template-columns: 1fr 1fr; }
+.toggle-group.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.toggle-btn {
+  background: var(--surface2);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  color: var(--gray);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.toggle-btn.active {
+  border-color: var(--green-main);
+  background: rgba(22,163,74,0.15);
+  color: var(--green-bright);
+}
+
+/* ===== PLAYER LIST ===== */
+.player-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.06);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.player-item.selected {
+  border-color: var(--green-main);
+  background: rgba(22,163,74,0.1);
+}
+.player-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--green-mid);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 18px;
+  color: var(--green-bright);
+  flex-shrink: 0;
+}
+.player-name { font-weight: 700; font-size: 15px; }
+.player-info { font-size: 11px; color: var(--green-bright); font-weight: 600; }
+.check-circle {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.2);
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.player-item.selected .check-circle {
+  background: var(--green-main);
+  border-color: var(--green-main);
+}
+
+/* ===== HOLE NAV ===== */
+.hole-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding: 10px 0;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.hole-nav::-webkit-scrollbar { display: none; }
+.hole-btn {
+  flex-shrink: 0;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.1);
+  background: var(--surface2);
+  color: var(--gray);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  position: relative;
+}
+.hole-btn.done { border-color: rgba(34,197,94,0.4); color: var(--green-bright); background: rgba(34,197,94,0.08); }
+.hole-btn.active { background: var(--green-main); border-color: var(--green-main); color: #000; }
+.hole-btn .dot {
+  position: absolute;
+  top: 3px; right: 3px;
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--green-bright);
+}
+
+/* ===== SCORE CARD ===== */
+.score-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 72px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.score-row:last-child { border-bottom: none; }
+.score-skins {
+  text-align: center;
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 8px 4px;
+}
+.skins-val {
+  font-family: var(--font-display);
+  font-size: 22px;
+  line-height: 1;
+}
+.skins-val.pos { color: var(--green-bright); }
+.skins-val.neg { color: var(--red); }
+.skins-val.zero { color: var(--gray); }
+.skins-label { font-size: 9px; color: var(--gray); letter-spacing: 0.5px; margin-top: 2px; }
+.score-input-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.score-input {
+  width: 64px; height: 48px;
+  background: var(--surface2);
+  border: 2px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  color: var(--green-bright);
+  font-size: 26px;
+  font-weight: 700;
+  text-align: center;
+  outline: none;
+  -moz-appearance: textfield;
+  transition: border-color 0.2s;
+}
+.score-input:focus { border-color: var(--green-main); background: rgba(22,163,74,0.08); }
+.score-input::-webkit-inner-spin-button, .score-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+.net-label { font-size: 10px; color: var(--gray); font-weight: 600; }
+
+/* ===== HOLE INFO ===== */
+.hole-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.hole-num {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1;
+  color: var(--green-bright);
+}
+.hole-meta { text-align: right; }
+.hole-par { font-size: 20px; font-weight: 700; color: var(--gold); }
+.hole-si { font-size: 11px; color: var(--gray); }
+
+/* ===== LEADERBOARD ===== */
+.lb-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border: 1.5px solid transparent;
+  transition: all 0.2s;
+}
+.lb-row.rank-1 { border-color: var(--gold); background: rgba(245,158,11,0.08); }
+.lb-row.rank-2 { border-color: #94a3b8; background: rgba(148,163,184,0.06); }
+.lb-row.rank-3 { border-color: #b45309; background: rgba(180,83,9,0.06); }
+.lb-rank {
+  font-family: var(--font-display);
+  font-size: 22px;
+  min-width: 28px;
+  color: var(--gray);
+}
+.lb-row.rank-1 .lb-rank { color: var(--gold); }
+.lb-row.rank-2 .lb-rank { color: #94a3b8; }
+.lb-row.rank-3 .lb-rank { color: #cd7f32; }
+.lb-info { flex: 1; }
+.lb-name { font-weight: 700; font-size: 15px; }
+.lb-detail { font-size: 11px; color: var(--gray); margin-top: 2px; }
+.lb-balance {
+  font-family: var(--font-display);
+  font-size: 20px;
+  text-align: right;
+}
+.lb-balance.pos { color: var(--green-bright); }
+.lb-balance.neg { color: var(--red); }
+
+/* ===== HISTORY ===== */
+.history-card {
+  background: var(--surface);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.history-header {
+  background: var(--surface2);
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.history-date { font-weight: 700; font-size: 14px; }
+.history-round { font-size: 11px; color: var(--green-bright); font-weight: 600; }
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.history-row:last-child { border-bottom: none; }
+.history-player { font-size: 13px; font-weight: 600; }
+.history-result { text-align: right; }
+.history-total { font-family: var(--font-display); font-size: 18px; }
+.history-total.pos { color: var(--green-bright); }
+.history-total.neg { color: var(--red); }
+.history-breakdown { font-size: 10px; color: var(--gray); }
+
+/* ===== SCORECARD TABLE ===== */
+.sc-wrap { overflow-x: auto; border-radius: var(--radius-sm); margin-bottom: 12px; }
+.sc-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+.sc-table th {
+  background: var(--surface3);
+  color: var(--gray);
+  padding: 6px 4px;
+  text-align: center;
+  white-space: nowrap;
+  font-weight: 700;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.sc-table td {
+  background: var(--surface2);
+  padding: 6px 4px;
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.04);
+  white-space: nowrap;
+}
+.sc-table th.sticky, .sc-table td.sticky {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+.sc-table th.sticky { background: var(--surface3); z-index: 3; }
+.sc-table td.sticky { background: var(--surface2); font-weight: 700; }
+.sc-table td.out, .sc-table td.total { background: rgba(34,197,94,0.08); font-weight: 700; color: var(--green-light); }
+
+/* ===== BILL ===== */
+.bill-player {
+  background: var(--surface);
+  border: 1.5px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 10px;
+}
+.bill-name-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+.bill-pname { font-weight: 700; font-size: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+.bill-total { font-family: var(--font-display); font-size: 26px; }
+.bill-total.pos { color: var(--green-bright); }
+.bill-total.neg { color: var(--red); }
+.bill-breakdown {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 11px;
+  color: var(--gray);
+}
+.bill-item { display: flex; justify-content: space-between; }
+.bill-item span:last-child { color: var(--white); font-weight: 600; }
+
+/* ===== STATS ===== */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.stat-card {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+.stat-val {
+  font-family: var(--font-display);
+  font-size: 28px;
+  color: var(--green-bright);
+  line-height: 1;
+}
+.stat-label { font-size: 11px; color: var(--gray); margin-top: 4px; font-weight: 600; }
+
+/* ===== LOADING / EMPTY ===== */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--gray);
+  gap: 12px;
+}
+.spinner {
+  width: 32px; height: 32px;
+  border: 3px solid rgba(34,197,94,0.2);
+  border-top-color: var(--green-bright);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.empty { text-align: center; padding: 40px 20px; color: var(--gray); font-size: 14px; }
+
+/* ===== MODAL ===== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 200;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--surface);
+  border-top: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px 20px 0 0;
+  width: 100%;
+  max-width: 480px;
+  padding: 16px 16px 32px;
+  transform: translateY(100%);
+  transition: transform 0.3s cubic-bezier(.34,1.56,.64,1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-handle {
+  width: 36px; height: 4px;
+  background: rgba(255,255,255,0.15);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* ===== TOASTS ===== */
+.toast {
+  position: fixed;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: var(--green-main);
+  color: #000;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 10px 20px;
+  border-radius: 30px;
+  z-index: 300;
+  opacity: 0;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.toast.error { background: var(--red); color: #fff; }
+
+/* ===== PLAYER FILTER ===== */
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-chip {
+  flex-shrink: 0;
+  background: var(--surface2);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  color: var(--gray);
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.filter-chip.active {
+  background: rgba(22,163,74,0.15);
+  border-color: var(--green-main);
+  color: var(--green-bright);
+}
+
+/* ===== MISC ===== */
+.divider {
+  border: none;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  margin: 12px 0;
+}
+.badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.badge-green { background: rgba(34,197,94,0.2); color: var(--green-bright); }
+.badge-gold { background: rgba(245,158,11,0.2); color: var(--gold); }
+.badge-red { background: rgba(239,68,68,0.2); color: #fca5a5; }
+.badge-blue { background: rgba(59,130,246,0.2); color: #93c5fd; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.btn-live {
+  background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+  color: #fff;
+}
+
+/* Hot win indicator */
+.hot-win-banner {
+  background: linear-gradient(135deg, #92400e, #b45309);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--gold-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-logo">⛳ GOLF PRO</div>
+  <div class="topbar-right">
+    <div class="carry-badge" id="carryBadge">🔥 CARRY</div>
+    <div style="font-size:11px;color:var(--gray)" id="topbarInfo"></div>
+  </div>
+</div>
+
+<!-- VIEWS -->
+<!-- 1. HOME (Leaderboard) -->
+<div class="view active" id="view-home">
+  <div class="section-title">LEADERBOARD</div>
+  <div class="section-sub" id="lbSubtitle">อัพเดทล่าสุดจาก Google Sheets</div>
+  <div id="lbList"><div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div></div>
+  <button class="btn btn-secondary" style="margin-top:4px" onclick="loadLeaderboard()">🔄 รีเฟรช</button>
+  <button class="btn btn-secondary" style="margin-top:8px" onclick="openHcpModal()">✏️ ปรับ Base HCP Manual</button>
+  <button class="btn btn-secondary" style="margin-top:8px" onclick="openBankModal()">🏦 ข้อมูลบัญชีรับเงิน</button>
+</div>
+
+<!-- 2. PLAY -->
+<div class="view" id="view-play">
+  <!-- Setup phase -->
+  <div id="setupPhase">
+    <div class="section-title">NEW MATCH</div>
+    <div class="section-sub">ตั้งค่าการแข่งขัน</div>
+
+    <div class="card">
+      <div class="card-header">📅 ข้อมูลการแข่ง</div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">วันที่แข่งขัน</label>
+          <input type="date" id="matchDate" class="form-input">
+        </div>
+        <div class="form-group">
+          <label class="form-label">รอบ</label>
+          <div class="toggle-group cols-2">
+            <div class="toggle-btn active" onclick="selectRound(1)" id="btnR1">R1</div>
+            <div class="toggle-btn" onclick="selectRound(2)" id="btnR2">R2</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">⛳ เลือก Course</div>
+      <div class="two-col">
+        <div class="form-group">
+          <label class="form-label">หน้า (H1–9)</label>
+          <div class="toggle-group cols-4">
+            <div class="toggle-btn active" onclick="selectCourse('front','A')" id="btnFA">A</div>
+            <div class="toggle-btn" onclick="selectCourse('front','B')" id="btnFB">B</div>
+            <div class="toggle-btn" onclick="selectCourse('front','C')" id="btnFC">C</div>
+            <div class="toggle-btn" onclick="selectCourse('front','D')" id="btnFD">D</div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">หลัง (H10–18)</label>
+          <div class="toggle-group cols-4">
+            <div class="toggle-btn" onclick="selectCourse('back','A')" id="btnBA">A</div>
+            <div class="toggle-btn active" onclick="selectCourse('back','B')" id="btnBB">B</div>
+            <div class="toggle-btn" onclick="selectCourse('back','C')" id="btnBC">C</div>
+            <div class="toggle-btn" onclick="selectCourse('back','D')" id="btnBD">D</div>
+          </div>
+        </div>
+      </div>
+      <div id="courseWarning" style="display:none;margin-top:8px;background:rgba(239,68,68,0.12);border:1.5px solid var(--red);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;font-weight:700;color:#fca5a5">
+        ⚠️ Course <span id="courseWarnText"></span> มี SI ซ้ำกัน — ไม่สามารถคำนวณ Stroke ได้ถูกต้อง กรุณาเลือก Course ใหม่
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">👥 เลือกผู้เล่น</div>
+      <div id="playerList"><div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div></div>
+    </div>
+
+    <button class="btn btn-primary" id="startBtn" onclick="startMatch()" style="display:none;margin-top:4px">
+      🏌️ START MATCH
+    </button>
+  </div>
+
+  <!-- Game phase -->
+  <div id="gamePhase" style="display:none">
+    <div class="hole-nav" id="holeNav"></div>
+    <div class="hole-info-bar">
+      <div>
+        <div style="font-size:11px;color:var(--gray);font-weight:700;letter-spacing:1px" id="courseLabel">COURSE A</div>
+        <div class="hole-num" id="holeNum">H1</div>
+      </div>
+      <div class="hole-meta">
+        <div class="hole-par" id="holePar">PAR 4</div>
+        <div class="hole-si" id="holeSI">SI 9</div>
+      </div>
+    </div>
+    <div class="card" style="padding:8px 12px">
+      <div id="scoreFields"></div>
+    </div>
+    <button class="btn btn-gold" onclick="openBill()" style="margin-top:8px">📊 Statement / Bill</button>
+    <button class="btn btn-live" id="liveBtn" onclick="saveLiveScore()" style="margin-top:8px">📡 อัพเดทสกอร์ Live</button>
+    <button class="btn btn-secondary" onclick="resetMatch()" style="margin-top:8px">← กลับหน้าตั้งค่า</button>
+  </div>
+</div>
+
+<!-- 3. HISTORY -->
+<div class="view" id="view-history">
+  <div class="section-title">MATCH HISTORY</div>
+  <div class="section-sub">ประวัติการแข่งขัน</div>
+  <div class="filter-bar" id="historyFilter">
+    <div class="filter-chip active" onclick="filterHistory('all', this)">ทั้งหมด</div>
+  </div>
+  <div id="historyList"><div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div></div>
+  <button class="btn btn-secondary" style="margin-top:4px" onclick="loadHistory()">🔄 รีเฟรช</button>
+</div>
+
+<!-- 4. STATS -->
+<div class="view" id="view-stats">
+  <div class="section-title">STATISTICS</div>
+  <div class="section-sub">สถิติส่วนตัว</div>
+  <div class="form-group">
+    <label class="form-label">เลือกผู้เล่น</label>
+    <select id="statsPlayerSelect" class="form-input" onchange="loadPlayerStats()">
+      <option value="">— เลือกผู้เล่น —</option>
+    </select>
+  </div>
+  <div id="statsContent"><div class="empty">เลือกผู้เล่นเพื่อดูสถิติ</div></div>
+</div>
+
+<!-- 5. BALANCE -->
+<div class="view" id="view-balance">
+  <div class="section-title">BALANCE</div>
+  <div class="section-sub">ยอดเงินของสมาชิก</div>
+  <div id="balanceList"><div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div></div>
+  <button class="btn btn-secondary" style="margin-top:4px" onclick="loadBalance()">🔄 รีเฟรช</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottomnav">
+  <button class="nav-item active" onclick="showView('home', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9,22 9,12 15,12 15,22"/></svg>
+    <span class="nav-label">หน้าหลัก</span>
+  </button>
+  <button class="nav-item" onclick="showView('play', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16 10,8" fill="currentColor"/></svg>
+    <span class="nav-label">เล่น</span>
+  </button>
+  <button class="nav-item" onclick="showView('history', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+    <span class="nav-label">ประวัติ</span>
+  </button>
+  <button class="nav-item" onclick="showView('stats', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+    <span class="nav-label">สถิติ</span>
+  </button>
+  <button class="nav-item" onclick="showView('balance', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+    <span class="nav-label">Balance</span>
+  </button>
+</div>
+
+<!-- BILL MODAL -->
+<div class="modal-overlay" id="billModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div>
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--green-bright)">MATCH BILL</div>
+        <div style="font-size:11px;color:var(--gray)" id="billMeta"></div>
+      </div>
+      <button onclick="closeBill()" style="background:var(--surface3);border:none;color:var(--gray);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div id="billScorecard" style="margin-bottom:16px"></div>
+    <div id="billContent"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeBill()">ปิด</button>
+      <button class="btn btn-primary" id="saveBtn" onclick="saveMatch()">💾 SAVE</button>
+    </div>
+    <button class="btn btn-gold" id="updateRankBtn" onclick="updateRanking()" style="margin-top:10px;display:none">
+      🏆 อัพเดทอันดับเงินและ HCP
+    </button>
+    <button class="btn btn-live" id="settleBtn" onclick="openSettlement()" style="margin-top:10px;display:none">
+      💰 สรุปเงิน (ค่าพนัน + ค่าน้ำ)
+    </button>
+  </div>
+</div>
+
+<!-- SETTLEMENT MODAL -->
+<div class="modal-overlay" id="settlementModal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div style="font-family:var(--font-display);font-size:24px;color:var(--green-bright)">💰 สรุปเงิน</div>
+      <button onclick="closeSettlement()" style="background:var(--surface3);border:none;color:var(--gray);width:36px;height:36px;border-radius:50%;font-size:16px;cursor:pointer">✕</button>
+    </div>
+
+    <!-- ส่วน 1: เงินพนัน -->
+    <div class="card-header" style="margin-bottom:8px">🎯 เงินพนันรวม (R1+R2)</div>
+    <div id="settleBet" style="margin-bottom:16px"></div>
+
+    <!-- ส่วน 2: ค่าน้ำ -->
+    <div class="card-header" style="margin-bottom:8px">🥤 ค่าน้ำ</div>
+
+    <!-- Round 1 -->
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px">
+      <div style="font-weight:700;margin-bottom:8px;font-size:13px">Round 1</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
+          <input type="number" id="water1Amount" placeholder="0" class="form-input" style="padding:8px">
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
+          <select id="water1Advance" class="form-input" style="padding:8px">
+            <option value="">— เลือก —</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-bottom:6px">คนที่ร่วมหาร R1</div>
+      <div id="water1Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <!-- Round 2 -->
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px" id="water2Section">
+      <div style="font-weight:700;margin-bottom:8px;font-size:13px">Round 2</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
+          <input type="number" id="water2Amount" placeholder="0" class="form-input" style="padding:8px">
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
+          <select id="water2Advance" class="form-input" style="padding:8px">
+            <option value="">— เลือก —</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-bottom:6px">คนที่ร่วมหาร R2</div>
+      <div id="water2Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <button class="btn btn-primary" onclick="calcSettlement()" style="margin-bottom:12px">⚡ คำนวณสรุปเงิน</button>
+
+    <!-- ส่วน 3: สรุปโอนเงิน -->
+    <div id="settleResult" style="display:none">
+      <div class="card-header" style="margin-bottom:8px">📋 สรุปโอนเงิน</div>
+      <div id="settleTransfers"></div>
+    </div>
+
+    <button class="btn btn-secondary" onclick="closeSettlement()" style="margin-top:10px">ปิด</button>
+  </div>
+</div>
+
+<!-- BANK INFO MODAL -->
+<div class="modal-overlay" id="bankModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-display);font-size:24px;color:var(--green-bright);margin-bottom:16px">🏦 ข้อมูลบัญชี</div>
+    <div id="bankList"></div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid rgba(255,255,255,0.08)">
+      <div style="font-size:12px;color:var(--gray);margin-bottom:8px">เพิ่ม/แก้ข้อมูลบัญชี</div>
+      <select id="bankPlayerSelect" class="form-input" style="margin-bottom:8px">
+        <option value="">— เลือกผู้เล่น —</option>
+      </select>
+      <select id="bankName" class="form-input" style="margin-bottom:8px">
+        <option value="">— ธนาคาร —</option>
+        <option>กสิกรไทย (KBank)</option>
+        <option>ไทยพาณิชย์ (SCB)</option>
+        <option>กรุงเทพ (BBL)</option>
+        <option>กรุงไทย (KTB)</option>
+        <option>ทหารไทยธนชาต (TTB)</option>
+        <option>ออมสิน</option>
+        <option>พร้อมเพย์</option>
+      </select>
+      <input type="text" id="bankNumber" class="form-input" placeholder="เลขบัญชี / เบอร์พร้อมเพย์" style="margin-bottom:8px">
+      <button class="btn btn-primary" onclick="saveBankInfo()">💾 บันทึก</button>
+    </div>
+    <button class="btn btn-secondary" onclick="closeBankModal()" style="margin-top:8px">ปิด</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- HCP ADJUST MODAL -->
+<div class="modal-overlay" id="hcpModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-display);font-size:24px;color:var(--green-bright);margin-bottom:4px">ปรับ BASE HCP</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:16px">กฎ ±2000 บาท ต่อ 1 HCP ยังคง apply ต่อจาก Base HCP ที่ตั้งไว้</div>
+    <div id="hcpAdjustList"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px">
+      <button class="btn btn-secondary" onclick="closeHcpModal()">ปิด</button>
+      <button class="btn btn-primary" onclick="saveBaseHCP()">💾 บันทึก HCP</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// =====================================================
+// CONFIG — แก้ URL นี้เป็น Google Apps Script URL ของคุณ
+// =====================================================
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyjtN-p_dOVnjeVkU9mwdegiP5bXtyZDIzY9piCuMvLpCelkxfL7eB9e8Uvs-0_ozz9cg/exec';
+
+// ===== COURSE DATA =====
+const courseData = {
+  'A': { holes:[1,2,3,4,5,6,7,8,9], par:[4,5,3,4,4,3,4,4,5], si:[9,5,17,7,15,11,3,1,13] },
+  'B': { holes:[10,11,12,13,14,15,16,17,18], par:[4,5,3,4,4,4,3,4,5], si:[16,12,18,2,6,10,14,4,8] },
+  'C': { holes:[1,2,3,4,5,6,7,8,9], par:[4,5,3,4,4,4,5,3,4], si:[15,3,17,9,5,11,7,13,1] },
+  'D': { holes:[10,11,12,13,14,15,16,17,18], par:[4,4,3,5,4,4,3,5,4], si:[10,12,14,4,6,8,16,18,2] }
+};
+
+// ===== STATE =====
+let config = { front:'A', back:'B', round:1 };
+let masterCourse = {};
+let playOrder = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18];
+let allPlayers = [], activePlayers = [];
+let scores = {};
+let currentHole = 1;
+let isSaved = false;
+[...Array(18)].forEach((_,i) => scores[i+1] = {});
+
+// ===== API CALLS =====
+async function gasCall(action, payload = {}) {
+  try {
+    const res = await fetch(GAS_URL + '?action=' + action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload)
+    });
+    return await res.json();
+  } catch(e) {
+    // fallback GET for read operations
+    try {
+      const res = await fetch(GAS_URL + '?action=' + action);
+      const text = await res.text();
+      return JSON.parse(text);
+    } catch(e2) {
+      return { error: e2.toString() };
+    }
+  }
+}
+
+// ===== NAVIGATION =====
+function showView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+
+  if (name === 'home') loadLeaderboard();
+  if (name === 'history') loadHistory();
+  if (name === 'balance') loadBalance();
+  if (name === 'stats') loadStatsPlayers();
+}
+
+// ===== TOAST =====
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = 'toast', 2800);
+}
+
+// ===== LEADERBOARD =====
+async function loadLeaderboard() {
+  const el = document.getElementById('lbList');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div>';
+  const data = await gasCall('getLeaderboard');
+  if (!data || data.error) { el.innerHTML = '<div class="empty">โหลดข้อมูลไม่ได้ ตรวจสอบการเชื่อมต่อ</div>'; return; }
+
+  const players = Array.isArray(data) ? data : [];
+  window._cachedLeaderboard = players;
+
+  // sort by balance asc (เสียเงินเยอะ = อันดับ 1)
+  players.sort((a,b) => (a.bal||0) - (b.bal||0));
+  document.getElementById('lbSubtitle').textContent = 'อัพเดทล่าสุด ' + new Date().toLocaleTimeString('th-TH', {hour:'2-digit',minute:'2-digit'});
+
+  el.innerHTML = players.map((p, i) => {
+    const isLast = i === players.length - 1;
+    const medal = i === 0 ? '🏆' : (i+1);
+    const rankClass = i === 0 ? 'rank-1' : '';
+    const bal = Number(p.bal) || 0;
+    const hcp = calcEffectiveHCP(p);
+    return `<div class="lb-row ${rankClass}">
+      <div class="lb-rank" style="${i===0?'font-size:28px':'}'}">${medal}</div>
+      <div class="lb-info">
+        <div class="lb-name">${p.name}</div>
+        <div class="lb-detail">HCP ${hcp} &nbsp;|&nbsp; ชนะ ${p.wins||0} รอบ</div>
+      </div>
+      <div class="lb-balance ${bal>=0?'pos':'neg'}">${bal.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+}
+
+// ===== BALANCE =====
+async function loadBalance() {
+  const el = document.getElementById('balanceList');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div>';
+  const data = await gasCall('getLeaderboard');
+  if (!data || data.error) { el.innerHTML = '<div class="empty">โหลดข้อมูลไม่ได้</div>'; return; }
+
+  const players = Array.isArray(data) ? data : [];
+  players.sort((a,b) => (a.bal||0) - (b.bal||0));
+
+  let totalPos = 0, totalNeg = 0;
+  players.forEach(p => { const b = Number(p.bal)||0; if(b>0) totalPos+=b; else totalNeg+=b; });
+
+  el.innerHTML = `
+    <div class="two-col" style="margin-bottom:12px">
+      <div class="stat-card"><div class="stat-val" style="color:var(--green-bright)">+${totalPos.toLocaleString()}</div><div class="stat-label">รวมบวก</div></div>
+      <div class="stat-card"><div class="stat-val" style="color:var(--red)">${totalNeg.toLocaleString()}</div><div class="stat-label">รวมลบ</div></div>
+    </div>
+    ${players.map(p => {
+      const bal = Number(p.bal)||0;
+      const hcp = calcEffectiveHCP(p);
+      const pct = Math.abs(bal) / (Math.max(...players.map(x=>Math.abs(Number(x.bal)||0)))||1) * 100;
+      return `<div class="lb-row">
+        <div class="lb-avatar" style="font-family:var(--font-display);font-size:20px;min-width:32px;color:var(--gray)">${p.name.charAt(0)}</div>
+        <div class="lb-info">
+          <div class="lb-name">${p.name}</div>
+          <div style="margin-top:5px;height:4px;background:var(--surface3);border-radius:2px;overflow:hidden">
+            <div style="height:100%;width:${pct}%;background:${bal>=0?'var(--green-main)':'var(--red)'};border-radius:2px;transition:width 0.5s"></div>
+          </div>
+          <div class="lb-detail" style="margin-top:3px">HCP ${hcp}</div>
+        </div>
+        <div class="lb-balance ${bal>=0?'pos':'neg'}" style="font-size:22px">${bal.toLocaleString()}</div>
+      </div>`;
+    }).join('')}`;
+}
+
+// ===== HISTORY =====
+let historyData = [];
+async function loadHistory() {
+  const el = document.getElementById('historyList');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div>';
+  const data = await gasCall('getHistory');
+  if (!data || data.error) { el.innerHTML = '<div class="empty">โหลดข้อมูลไม่ได้</div>'; return; }
+  historyData = Array.isArray(data) ? data : [];
+
+  // Build player filter chips
+  const players = [...new Set(historyData.map(r => r.name))];
+  const filterBar = document.getElementById('historyFilter');
+  filterBar.innerHTML = '<div class="filter-chip active" onclick="filterHistory(\'all\', this)">ทั้งหมด</div>' +
+    players.map(p => `<div class="filter-chip" onclick="filterHistory('${p}', this)">${p}</div>`).join('');
+
+  renderHistory(historyData);
+}
+
+function filterHistory(player, el) {
+  document.querySelectorAll('#historyFilter .filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  const filtered = player === 'all' ? historyData : historyData.filter(r => r.name === player);
+  renderHistory(groupByMatch(filtered));
+}
+
+function groupByMatch(rows) {
+  const map = {};
+  rows.forEach(r => {
+    const key = (r.date||'') + '_' + (r.round||'');
+    if (!map[key]) map[key] = { date: r.date, round: r.round, players: [] };
+    map[key].players.push(r);
+  });
+  return Object.values(map).reverse();
+}
+
+function renderHistory(data) {
+  const el = document.getElementById('historyList');
+  const grouped = Array.isArray(data[0]?.players) ? data : groupByMatch(data);
+  if (!grouped.length) { el.innerHTML = '<div class="empty">ยังไม่มีประวัติการแข่งขัน</div>'; return; }
+
+  // จัดกลุ่มตามวันที่ (อาจมีหลาย Round ต่อวัน)
+  const byDate = {};
+  grouped.forEach(match => {
+    const d = match.date || '–';
+    if (!byDate[d]) byDate[d] = [];
+    byDate[d].push(match);
+  });
+
+  el.innerHTML = Object.entries(byDate).map(([date, matches]) => {
+    // รวมผู้เล่นทุก Round ในวันเดียวกัน สำหรับตาราง Gross
+    const allPlayersInDay = [...new Set(matches.flatMap(m => m.players.map(p => p.name)))];
+
+    const grossTableRows = allPlayersInDay.map(name => {
+      const cells = matches.map(match => {
+        const p = match.players.find(x => x.name === name);
+        const gross = p?.gross;
+        return `<td style="text-align:center;padding:6px 10px;font-family:var(--font-display);font-size:15px;color:${gross?'var(--green-bright)':'var(--gray)'}">${gross || '–'}</td>`;
+      }).join('');
+      return `<tr>
+        <td style="padding:6px 10px;font-weight:700">${name}</td>
+        ${cells}
+      </tr>`;
+    }).join('');
+
+    const roundHeaders = matches.map(m =>
+      `<th style="text-align:center;padding:6px 10px;color:var(--gray);font-size:11px;font-weight:600">${m.round||''}</th>`
+    ).join('');
+
+    return `<div class="history-card">
+      <div class="history-header">
+        <div class="history-date">📅 ${date}</div>
+      </div>
+
+      ${matches.map(match => `
+        <div style="margin-bottom:8px">
+          <div style="font-size:11px;font-weight:700;color:var(--gray);margin:8px 0 4px">${match.round||''}</div>
+          ${match.players.sort((a,b)=>Number(b.total||0)-Number(a.total||0)).map(p => {
+            const tot = Number(p.total)||0;
+            return `<div class="history-row">
+              <div class="history-player">${p.name}</div>
+              <div class="history-result">
+                <div class="history-total ${tot>=0?'pos':'neg'}">${tot>0?'+':''}${tot.toLocaleString()}</div>
+                <div class="history-breakdown">Skins ${p.skins||0} | Stroke ${p.stroke||0} | Stable ${p.stable||0}</div>
+              </div>
+            </div>`;
+          }).join('')}
+        </div>`).join('')}
+
+      <!-- ตาราง Gross Score -->
+      <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.08);padding-top:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px">🏌️ GROSS SCORE</div>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;background:var(--surface2);border-radius:var(--radius-sm);overflow:hidden">
+            <thead>
+              <tr style="background:var(--surface3)">
+                <th style="text-align:left;padding:6px 10px;color:var(--gray);font-size:11px;font-weight:600">ผู้เล่น</th>
+                ${roundHeaders}
+              </tr>
+            </thead>
+            <tbody>${grossTableRows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ===== STATS =====
+async function loadStatsPlayers() {
+  const sel = document.getElementById('statsPlayerSelect');
+  if (sel.options.length > 1) return;
+  const data = await gasCall('getLeaderboard');
+  if (!data || !Array.isArray(data)) return;
+  allPlayers = data;
+  sel.innerHTML = '<option value="">— เลือกผู้เล่น —</option>' +
+    data.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+}
+
+async function loadPlayerStats() {
+  const name = document.getElementById('statsPlayerSelect').value;
+  const el = document.getElementById('statsContent');
+  if (!name) { el.innerHTML = '<div class="empty">เลือกผู้เล่นเพื่อดูสถิติ</div>'; return; }
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div>';
+
+  const history = await gasCall('getHistory');
+  if (!history || !Array.isArray(history)) { el.innerHTML = '<div class="empty">ไม่มีข้อมูล</div>'; return; }
+
+  const rows = history.filter(r => r.name === name);
+  if (!rows.length) { el.innerHTML = '<div class="empty">ยังไม่มีประวัติการแข่งขันของผู้เล่นนี้</div>'; return; }
+
+  // เรียงล่าสุดขึ้นก่อน
+  rows.sort((a, b) => {
+    const da = new Date(String(a.date).split('T')[0]);
+    const db = new Date(String(b.date).split('T')[0]);
+    return db - da || String(a.round).localeCompare(String(b.round));
+  });
+
+  el.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px">
+    ${rows.map(r => {
+      const tot = Number(r.total || 0);
+      const gross = Number(r.gross || 0);
+      const date = String(r.date||'').split('T')[0];
+      return `<div class="card" style="padding:12px 16px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div style="font-weight:700;font-size:14px">${date}</div>
+            <div style="font-size:11px;color:var(--gray);margin-top:2px">${r.round||''} &nbsp;|&nbsp; Gross <span style="font-family:var(--font-display);font-size:22px;color:#fff;vertical-align:middle">${gross || '–'}</span></div>
+          </div>
+          <div style="font-family:var(--font-display);font-size:24px;color:${tot>=0?'var(--green-bright)':'var(--red)'}">
+            ${tot>0?'+':''}${tot.toLocaleString()}
+          </div>
+        </div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderStatBar(label, val, max, isNet=false) {
+  const color = isNet ? (val>0?'var(--green-bright)':'var(--red)') : 'var(--green-bright)';
+  const pct = max ? Math.min(100, Math.abs(val)/max*100) : 50;
+  return `<div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">
+      <span style="color:var(--gray)">${label}</span>
+      <span style="font-weight:700;color:${color}">${val>0&&isNet?'+':''}${typeof val==='number'?val.toFixed(1):val}</span>
+    </div>
+    <div style="height:5px;background:var(--surface3);border-radius:3px;overflow:hidden">
+      <div style="height:100%;width:${pct}%;background:${color};border-radius:3px;transition:width 0.6s ease"></div>
+    </div>
+  </div>`;
+}
+
+// ===== SETUP PHASE =====
+function selectRound(r) {
+  config.round = r;
+  document.getElementById('btnR1').classList.toggle('active', r===1);
+  document.getElementById('btnR2').classList.toggle('active', r===2);
+  // Reset save state เมื่อเปลี่ยน Round
+  isSaved = false;
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 SAVE'; }
+  const rankBtn = document.getElementById('updateRankBtn');
+  if (rankBtn) rankBtn.style.display = 'none';
+}
+
+function selectCourse(type, name) {
+  config[type] = name;
+  ['A','B','C','D'].forEach(c => {
+    if (type === 'front') {
+      const fb = document.getElementById('btnF'+c);
+      if (fb) fb.classList.toggle('active', name===c);
+    } else {
+      const bb = document.getElementById('btnB'+c);
+      if (bb) bb.classList.toggle('active', name===c);
+    }
+  });
+  // Validate: A+C หรือ B+D มี SI ซ้ำกัน
+  const badPairs = [['A','C'],['C','A'],['B','D'],['D','B']];
+  const warn = document.getElementById('courseWarning');
+  const warnText = document.getElementById('courseWarnText');
+  const isInvalid = badPairs.some(([f,b]) => config.front===f && config.back===b);
+  warn.style.display = isInvalid ? 'block' : 'none';
+  if (isInvalid) warnText.textContent = config.front + '+' + config.back;
+  const startBtn = document.getElementById('startBtn');
+  if (startBtn) { startBtn.style.pointerEvents = isInvalid ? 'none' : ''; startBtn.style.opacity = isInvalid ? '0.4' : ''; }
+}
+function buildCourse() {
+  const f = courseData[config.front], b = courseData[config.back];
+  // หน้า = H1-9 เสมอ, หลัง = H10-18 เสมอ ไม่ว่าจะเลือก Course ไหน
+  [1,2,3,4,5,6,7,8,9].forEach((h,i) => { masterCourse[h] = { p:f.par[i], si:f.si[i], course:config.front }; });
+  [10,11,12,13,14,15,16,17,18].forEach((h,i) => { masterCourse[h] = { p:b.par[i], si:b.si[i], course:config.back }; });
+}
+function calcEffectiveHCP(p) {
+  return Number(p.hcp) - Math.trunc(Number(p.bal||0) / 2000);
+}
+
+async function loadSetupPlayers() {
+  const el = document.getElementById('playerList');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div>';
+  const data = await gasCall('getLeaderboard');
+  if (!data || !Array.isArray(data)) { el.innerHTML = '<div class="empty">โหลดผู้เล่นไม่ได้</div>'; return; }
+  allPlayers = data;
+  document.getElementById('startBtn').style.display = 'block';
+  el.innerHTML = allPlayers.map((p, i) => {
+    const hcp = calcEffectiveHCP(p);
+    return `<div class="player-item" onclick="togglePlayer(${i}, this)" id="pi${i}">
+      <div class="player-avatar">${p.name.charAt(0)}</div>
+      <div class="lb-info">
+        <div class="player-name">${p.name}</div>
+        <div class="player-info">HCP ${hcp} &nbsp;|&nbsp; Balance ${Number(p.bal).toLocaleString()}</div>
+      </div>
+      <div class="check-circle">✓</div>
+    </div>`;
+  }).join('');
+}
+
+function togglePlayer(i, el) {
+  el.classList.toggle('selected');
+}
+
+function startMatch() {
+  const selected = document.querySelectorAll('.player-item.selected');
+  if (selected.length < 2) { showToast('เลือกผู้เล่นอย่างน้อย 2 คนครับ', true); return; }
+  activePlayers = Array.from(selected).map(el => allPlayers[el.id.replace('pi','')]);
+  buildCourse();
+  scores = {};
+  [...Array(18)].forEach((_,i) => { scores[i+1] = {}; activePlayers.forEach(p => scores[i+1][p.name] = ''); });
+  isSaved = false;
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 SAVE'; }
+  const rankBtn = document.getElementById('updateRankBtn');
+  if (rankBtn) rankBtn.style.display = 'none';
+  document.getElementById('setupPhase').style.display = 'none';
+  document.getElementById('gamePhase').style.display = 'block';
+  renderHoleNav();
+  jumpTo(1);
+}
+
+function resetMatch() {
+  if (!confirm('รีเซ็ตการแข่งขัน?')) return;
+  document.getElementById('setupPhase').style.display = '';
+  document.getElementById('gamePhase').style.display = 'none';
+}
+
+// ===== GAME PHASE =====
+function renderHoleNav() {
+  const nav = document.getElementById('holeNav');
+  nav.innerHTML = playOrder.map(h => `
+    <button class="hole-btn" id="hn${h}" onclick="jumpTo(${h})">${h}
+      <span class="dot" id="dot${h}" style="display:none"></span>
+    </button>`).join('');
+}
+
+function jumpTo(h) {
+  currentHole = h;
+  document.querySelectorAll('.hole-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('hn'+h);
+  if (btn) { btn.classList.add('active'); btn.scrollIntoView({inline:'center',behavior:'smooth'}); }
+  const cd = masterCourse[h] || {};
+  document.getElementById('holeNum').textContent = 'H' + h;
+  document.getElementById('courseLabel').textContent = 'COURSE ' + (cd.course||'');
+  document.getElementById('holePar').textContent = 'PAR ' + (cd.p||'–');
+  document.getElementById('holeSI').textContent = 'SI ' + (cd.si||'–');
+  renderScoreFields();
+}
+
+function calcStroke(hcp, si) {
+  if (hcp >= 0) return (hcp >= si ? 1 : 0) + (hcp - 18 >= si ? 1 : 0);
+  return si >= (18 + hcp + 1) ? -1 : 0;
+}
+
+function calcHoleSkins(h) {
+  const res = {}; activePlayers.forEach(p => res[p.name] = 0);
+  const cd = masterCourse[h]; if (!cd) return res;
+  const { p: par, si } = cd;
+  const stats = activePlayers.map(p => {
+    const val = scores[h][p.name]; if (!val && val !== 0) return null;
+    const g = Number(val), hcp = calcEffectiveHCP(p), stroke = calcStroke(hcp, si);
+    return { name:p.name, gross:g, net:g-stroke, isBirdie:g===par-1, isEagle:g<=par-2 };
+  });
+  if (stats.some(x => x===null)) return res;
+  for (let i=0; i<stats.length; i++) for (let j=i+1; j<stats.length; j++) {
+    const p1=stats[i], p2=stats[j]; let p1Win=0;
+    if (p1.net < p2.net) { let m=p1.isEagle?4:(p1.isBirdie?2:1); if(p2.isBirdie||p2.isEagle)m=Math.max(0,m-1); p1Win=m; }
+    else if (p2.net < p1.net) { let m=p2.isEagle?4:(p2.isBirdie?2:1); if(p1.isBirdie||p1.isEagle)m=Math.max(0,m-1); p1Win=-m; }
+    else { if((p1.isBirdie||p1.isEagle)&&!(p2.isBirdie||p2.isEagle))p1Win=1; else if(!(p1.isBirdie||p1.isEagle)&&(p2.isBirdie||p2.isEagle))p1Win=-1; }
+    res[p1.name]+=p1Win; res[p2.name]-=p1Win;
+  }
+  return res;
+}
+
+function calcProgressSkins(stopHole) {
+  const prog = {}; activePlayers.forEach(p => prog[p.name] = 0);
+  let carry = 1;
+  for (const h of playOrder) {
+    const hRes = calcHoleSkins(h);
+    if (!activePlayers.every(p => scores[h][p.name] !== '')) break;
+    const action = Object.values(hRes).some(v => v !== 0);
+    if (!action) carry *= 2;
+    else { activePlayers.forEach(p => prog[p.name] += hRes[p.name] * carry); carry = 1; }
+    if (h === stopHole) break;
+  }
+  document.getElementById('carryBadge').style.display = carry > 1 ? 'inline-block' : 'none';
+  return prog;
+}
+
+function renderScoreFields() {
+  const fields = document.getElementById('scoreFields');
+  const hSkin = calcHoleSkins(currentHole);
+  const cSkin = calcProgressSkins(currentHole);
+  const si = masterCourse[currentHole]?.si || 18;
+
+  fields.innerHTML = activePlayers.map(p => {
+    const hp = hSkin[p.name] || 0, cp = cSkin[p.name] || 0;
+    const hcp = calcEffectiveHCP(p);
+    const stroke = calcStroke(hcp, si);
+    const gVal = scores[currentHole][p.name] || '';
+    const nVal = gVal !== '' ? (Number(gVal) - stroke) : '–';
+    const cpClass = cp > 0 ? 'pos' : cp < 0 ? 'neg' : 'zero';
+    const holeLabel = hp !== 0 ? (hp > 0 ? '+'+hp : hp) : 'TIE';
+
+    return `<div class="score-row">
+      <div>
+        <div style="font-weight:700;font-size:15px">${p.name}</div>
+        <div style="font-size:11px;color:var(--blue);font-weight:600">HCP ${hcp} (+${stroke})</div>
+      </div>
+      <div class="score-skins">
+        <div class="skins-val ${cpClass}">${cp > 0 ? '+' : ''}${cp}</div>
+        <div class="skins-label">${holeLabel}</div>
+      </div>
+      <div class="score-input-wrap">
+        <input type="number" inputmode="numeric" class="score-input"
+          value="${gVal}"
+          oninput="updateScore(${currentHole},'${p.name}',this.value)">
+        <div class="net-label">Net: ${nVal}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updateScore(h, name, val) {
+  scores[h][name] = val;
+  const allFilled = activePlayers.every(p => scores[h][p.name] !== '');
+  const btn = document.getElementById('dot'+h);
+  if (btn) { btn.style.display = allFilled ? 'block' : 'none'; }
+  const hBtn = document.getElementById('hn'+h);
+  if (hBtn && allFilled && !hBtn.classList.contains('active')) hBtn.classList.add('done');
+  // Auto-save ลง localStorage ทุกครั้งที่กรอก
+  autoSaveSession();
+  renderScoreFields();
+}
+
+function autoSaveSession() {
+  try {
+    const session = {
+      config: { ...config, date: document.getElementById('matchDate')?.value },
+      scores,
+      players: activePlayers.map(p => p.name),
+      savedAt: Date.now()
+    };
+    localStorage.setItem('golfpro_session', JSON.stringify(session));
+  } catch(e) {}
+}
+
+function clearSession() {
+  try { localStorage.removeItem('golfpro_session'); } catch(e) {}
+}
+
+function restoreSession() {
+  try {
+    const raw = localStorage.getItem('golfpro_session');
+    if (!raw) return false;
+    const session = JSON.parse(raw);
+    // ถ้าเก่ากว่า 24 ชม. ไม่ restore
+    if (Date.now() - session.savedAt > 86400000) { clearSession(); return false; }
+    return session;
+  } catch(e) { return false; }
+}
+
+// ===== BILL =====
+function openBill() {
+  const skins = calcProgressSkins(playOrder[playOrder.length-1]);
+  const sum = {};
+  activePlayers.forEach(p => sum[p.name] = { out:0, in:0, tot:0, net:0, stable:0 });
+
+  activePlayers.forEach(p => {
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].forEach(h => {
+      const g = (scores[h]?.[p.name] !== '') ? Number(scores[h]?.[p.name])||0 : 0;
+      if (!g) return;
+      sum[p.name].tot += g;
+      if (h<=9) sum[p.name].out+=g; else sum[p.name].in+=g;
+      const hcp = calcEffectiveHCP(p), si = masterCourse[h]?.si||18;
+      const stroke = calcStroke(hcp, si), n = g-stroke;
+      sum[p.name].net += n;
+      sum[p.name].stable += Math.max(0, (masterCourse[h]?.p||4)-n+2);
+    });
+  });
+
+  const sts = activePlayers.map(p => sum[p.name].stable);
+  const mx = Math.max(...sts), mn = Math.min(...sts);
+  const winS = activePlayers.filter(p => sum[p.name].stable===mx);
+  const loseS = activePlayers.filter(p => sum[p.name].stable===mn);
+  const isHotWin = mx >= 37, payNormal = isHotWin?100:50, payLast = isHotWin?200:100;
+
+  const resArr = activePlayers.map(p => {
+    const s = sum[p.name];
+    let strM = 0;
+    activePlayers.forEach(p2 => { if(p.name!==p2.name) strM += (sum[p2.name].net - s.net)*10; });
+    const stM = s.stable===mx ? ((payNormal*(activePlayers.length-winS.length-loseS.length))+(payLast*loseS.length))/winS.length : (s.stable===mn?-payLast:-payNormal);
+    const skinM = (skins[p.name]||0)*50;
+    return { name:p.name, total:skinM+strM+stM, skinPt:skins[p.name]||0, skins:skinM, stroke:strM, stable:stM, stableScore:s.stable, gross:s.tot, grossOut:s.out, grossIn:s.in };
+  });
+
+  window.lastResults = resArr;
+  window.lastSumData = sum;
+
+  // Scorecard
+  const names = activePlayers.map(p=>p.name);
+  let scHtml = `<div class="sc-wrap"><table class="sc-table">
+    <thead>
+      <tr><th class="sticky">H</th>${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(h=>`<th>${h}</th>`).join('')}<th>OUT</th><th>IN</th><th>TOT</th></tr>
+      <tr><th class="sticky" style="background:var(--surface3)">P</th>${[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].map(h=>`<th style="background:rgba(245,158,11,0.1);color:var(--gold)">${masterCourse[h]?.p||'–'}</th>`).join('')}<th></th><th></th><th></th></tr>
+    </thead><tbody>`;
+  activePlayers.forEach(p => {
+    const s = sum[p.name];
+    scHtml += `<tr><td class="sticky">${p.name.split(' ')[0]}</td>`;
+    [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18].forEach(h => {
+      const g = (scores[h]?.[p.name]!=='')?Number(scores[h]?.[p.name])||0:0;
+      scHtml += `<td>${g||'–'}</td>`;
+    });
+    scHtml += `<td class="out">${s.out||0}</td><td class="out">${s.in||0}</td><td class="total">${s.tot||0}</td></tr>`;
+  });
+  scHtml += '</tbody></table></div>';
+
+  document.getElementById('billScorecard').innerHTML = scHtml;
+  document.getElementById('billMeta').textContent = `${document.getElementById('matchDate').value} | Round ${config.round}`;
+
+  let billHtml = '';
+  if (isHotWin) billHtml += `<div class="hot-win-banner">🔥 HOT WIN! Stable ≥37 — เพิ่มเงินเป็น 2 เท่า!</div>`;
+
+  billHtml += resArr.sort((a,b)=>b.total-a.total).map(r => `
+    <div class="bill-player">
+      <div class="bill-name-row">
+        <div class="bill-pname">${r.name}</div>
+        <div class="bill-total ${r.total>=0?'pos':'neg'}">${r.total>0?'+':''}${r.total.toLocaleString()}</div>
+      </div>
+      <div class="bill-breakdown">
+        <div class="bill-item"><span>Skins (${r.skinPt>0?'+':''}${r.skinPt}pt)</span><span>${r.skins.toLocaleString()}</span></div>
+        <div class="bill-item"><span>Stroke</span><span>${r.stroke.toLocaleString()}</span></div>
+        <div class="bill-item"><span>Stable (${r.stableScore}pt)</span><span>${r.stable.toLocaleString()}</span></div>
+        <div class="bill-item"><span>Gross</span><span>${r.gross}</span></div>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('billContent').innerHTML = billHtml;
+  document.getElementById('billModal').classList.add('open');
+}
+
+function closeBill() { document.getElementById('billModal').classList.remove('open'); }
+
+// ===== LIVE SCORE (ข้อ 1) =====
+async function saveLiveScore() {
+  const btn = document.getElementById('liveBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังอัพเดท...';
+  const liveData = {
+    date: document.getElementById('matchDate').value,
+    round: 'Round ' + config.round,
+    hole: currentHole,
+    players: activePlayers.map(p => {
+      const s = { name: p.name, hcp: calcEffectiveHCP(p), scores: {} };
+      playOrder.forEach(h => { s.scores[h] = scores[h][p.name] || ''; });
+      return s;
+    })
+  };
+  const result = await gasCall('saveLive', liveData);
+  if (result && !result.error) {
+    showToast('📡 อัพเดท Live สำเร็จ!');
+  } else {
+    showToast('เกิดข้อผิดพลาด: ' + (result?.error||'unknown'), true);
+  }
+  btn.disabled = false; btn.textContent = '📡 อัพเดทสกอร์ Live';
+}
+
+// ===== SAVE MATCH (ข้อ 3+4) — Save ผล แต่ไม่อัพเดท Balance =====
+async function saveMatch() {
+  if (isSaved) { showToast('บันทึกไปแล้วครับ'); return; }
+  const btn = document.getElementById('saveBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
+
+  const meta = { date: document.getElementById('matchDate').value, round: 'Round ' + config.round };
+  const result = await gasCall('saveResult', { results: window.lastResults, meta });
+  if (result && !result.error) {
+    isSaved = true;
+    clearSession();
+    showToast('✅ บันทึกผลเรียบร้อย! (ยังไม่อัพเดทอันดับ)');
+    btn.textContent = '✅ บันทึกแล้ว';
+    document.getElementById('updateRankBtn').style.display = 'block';
+    document.getElementById('settleBtn').style.display = 'block';
+  } else {
+    showToast('เกิดข้อผิดพลาด: ' + (result?.error||'unknown'), true);
+    btn.disabled = false; btn.textContent = '💾 SAVE';
+  }
+}
+
+async function updateRanking() {
+  const btn = document.getElementById('updateRankBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังคำนวณ...';
+
+  const today = document.getElementById('matchDate').value;
+
+  // ดึง history และ leaderboard พร้อมกัน
+  const [history, leaderboard] = await Promise.all([
+    gasCall('getHistory'),
+    gasCall('getLeaderboard')
+  ]);
+
+  if (!Array.isArray(history) || !Array.isArray(leaderboard)) {
+    showToast('โหลดข้อมูลไม่ได้', true);
+    btn.disabled = false; btn.textContent = '🏆 อัพเดทอันดับเงินและ HCP';
+    return;
+  }
+
+  // รวม total ทุก Round ของวันนี้ per player
+  const dayTotals = {};
+  history.filter(r => {
+    // normalize date format for comparison
+    const rDate = String(r.date||'').split('T')[0];
+    return rDate === today;
+  }).forEach(r => {
+    dayTotals[r.name] = (dayTotals[r.name] || 0) + Number(r.total || 0);
+  });
+
+  // ใช้ Balance ล่าสุดจาก leaderboard (ไม่ใช่ cache จาก activePlayers)
+  const upBal = Object.entries(dayTotals).map(([name, dayTotal]) => {
+    const player = leaderboard.find(p => p.name === name);
+    const currentBal = Number(player?.bal || 0);
+    return { name, newBal: currentBal + dayTotal };
+  });
+
+  if (!upBal.length) {
+    showToast('ไม่พบข้อมูลการแข่งในวันนี้', true);
+    btn.disabled = false; btn.textContent = '🏆 อัพเดทอันดับเงินและ HCP';
+    return;
+  }
+
+  const result = await gasCall('updateBalances', { updatedBalances: upBal });
+  if (result && !result.error) {
+    showToast('🏆 อัพเดทอันดับและ HCP เรียบร้อย!');
+    btn.textContent = '✅ อัพเดทแล้ว';
+    btn.disabled = true;
+    setTimeout(closeBill, 1500);
+  } else {
+    showToast('เกิดข้อผิดพลาด: ' + (result?.error||'unknown'), true);
+    btn.disabled = false; btn.textContent = '🏆 อัพเดทอันดับเงินและ HCP';
+  }
+}
+
+// ===== MANUAL BASE HCP (ข้อ 5) =====
+let hcpAdjustData = [];
+
+async function openHcpModal() {
+  const data = await gasCall('getLeaderboard');
+  if (!data || !Array.isArray(data)) { showToast('โหลดข้อมูลไม่ได้', true); return; }
+  hcpAdjustData = data.map(p => ({ ...p, newHcp: Number(p.hcp) }));
+  renderHcpAdjust();
+  document.getElementById('hcpModal').classList.add('open');
+}
+
+function renderHcpAdjust() {
+  document.getElementById('hcpAdjustList').innerHTML = hcpAdjustData.map((p, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div>
+        <div style="font-weight:700">${p.name}</div>
+        <div style="font-size:11px;color:var(--gray)">Base HCP เดิม: ${p.hcp}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button onclick="adjustHcp(${i},-1)" style="width:34px;height:34px;border-radius:50%;border:2px solid var(--red);background:rgba(239,68,68,0.1);color:var(--red);font-size:18px;font-weight:700;cursor:pointer">−</button>
+        <div style="font-family:var(--font-display);font-size:26px;color:var(--green-bright);min-width:32px;text-align:center">${p.newHcp}</div>
+        <button onclick="adjustHcp(${i},+1)" style="width:34px;height:34px;border-radius:50%;border:2px solid var(--green-main);background:rgba(22,163,74,0.1);color:var(--green-bright);font-size:18px;font-weight:700;cursor:pointer">+</button>
+      </div>
+    </div>`).join('');
+}
+
+function adjustHcp(i, delta) {
+  hcpAdjustData[i].newHcp = Math.max(0, hcpAdjustData[i].newHcp + delta);
+  renderHcpAdjust();
+}
+
+function closeHcpModal() { document.getElementById('hcpModal').classList.remove('open'); }
+
+async function saveBaseHCP() {
+  const changed = hcpAdjustData.filter(p => p.newHcp !== Number(p.hcp));
+  if (!changed.length) { showToast('ไม่มีการเปลี่ยนแปลง'); return; }
+  const updates = changed.map(p => ({ name: p.name, newHcp: p.newHcp }));
+  const result = await gasCall('updateBaseHCP', { updates });
+  if (result && !result.error) {
+    showToast('✅ อัพเดท Base HCP เรียบร้อย!');
+    closeHcpModal();
+    loadLeaderboard();
+  } else {
+    showToast('เกิดข้อผิดพลาด: ' + (result?.error||'unknown'), true);
+  }
+}
+
+// ===== SETTLEMENT =====
+let settlementData = { bets: {}, allPlayers: [] };
+
+async function openSettlement() {
+  // ดึงประวัติวันนี้เพื่อรวมเงินพนัน R1+R2
+  const today = document.getElementById('matchDate').value;
+  const history = await gasCall('getHistory');
+  const dayRows = Array.isArray(history) ? history.filter(r => String(r.date||'').split('T')[0] === today) : [];
+
+  // รวมเงินพนันต่อคน
+  const bets = {};
+  dayRows.forEach(r => { bets[r.name] = (bets[r.name]||0) + Number(r.total||0); });
+  settlementData.bets = bets;
+
+  // รวมชื่อผู้เล่นทั้งหมดในวันนี้
+  const allNames = [...new Set(dayRows.map(r => r.name))];
+  settlementData.allPlayers = allNames;
+
+  // แสดงเงินพนัน
+  document.getElementById('settleBet').innerHTML = allNames.length
+    ? allNames.map(n => {
+        const t = bets[n]||0;
+        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+          <span style="font-weight:700">${n}</span>
+          <span style="font-family:var(--font-display);font-size:20px;color:${t>=0?'var(--green-bright)':'var(--red)'}">${t>0?'+':''}${t.toLocaleString()}</span>
+        </div>`;
+      }).join('')
+    : '<div style="color:var(--gray);font-size:13px">ไม่พบข้อมูลการแข่งวันนี้</div>';
+
+  // Populate dropdowns และ checkboxes
+  ['water1Advance','water2Advance','bankPlayerSelect'].forEach(id => {
+    const sel = document.getElementById(id);
+    if (!sel) return;
+    sel.innerHTML = '<option value="">— เลือก —</option>' + allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+  });
+
+  ['water1Players','water2Players'].forEach((id, ri) => {
+    document.getElementById(id).innerHTML = allNames.map(n => `
+      <label style="display:flex;align-items:center;gap:6px;background:var(--surface3);padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px">
+        <input type="checkbox" value="${n}" checked style="accent-color:var(--green-main)"> ${n}
+      </label>`).join('');
+  });
+
+  // ซ่อน R2 ถ้าเล่น Round เดียว
+  const hasR2 = dayRows.some(r => String(r.round||'').includes('2'));
+  document.getElementById('water2Section').style.display = hasR2 ? 'block' : 'none';
+
+  document.getElementById('settleResult').style.display = 'none';
+  document.getElementById('settlementModal').classList.add('open');
+}
+
+function calcSettlement() {
+  const { bets, allPlayers } = settlementData;
+
+  // คำนวณค่าน้ำแต่ละ Round
+  function calcWater(amountId, advanceId, playersId) {
+    const amount = Number(document.getElementById(amountId)?.value || 0);
+    const advance = document.getElementById(advanceId)?.value;
+    const checked = [...document.querySelectorAll(`#${playersId} input:checked`)].map(i => i.value);
+    if (!amount || !advance || !checked.length) return {};
+    const share = Math.round(amount / checked.length);
+    const result = {};
+    checked.forEach(n => { result[n] = (result[n]||0) - share; });
+    result[advance] = (result[advance]||0) + amount;
+    return result;
+  }
+
+  const w1 = calcWater('water1Amount','water1Advance','water1Players');
+  const w2 = calcWater('water2Amount','water2Advance','water2Players');
+
+  // รวมทุกอย่าง: เงินพนัน + ค่าน้ำ R1 + ค่าน้ำ R2
+  const net = {};
+  allPlayers.forEach(n => { net[n] = (bets[n]||0); });
+  [w1, w2].forEach(w => { Object.entries(w).forEach(([n, v]) => { net[n] = (net[n]||0) + v; }); });
+
+  // คำนวณโอนเงินขั้นต่ำ (debt settlement algorithm)
+  const balances = Object.entries(net).map(([name, amt]) => ({ name, amt }));
+  const creditors = balances.filter(b => b.amt > 0).sort((a,b) => b.amt - a.amt);
+  const debtors = balances.filter(b => b.amt < 0).sort((a,b) => a.amt - b.amt);
+
+  const transfers = [];
+  let ci = 0, di = 0;
+  const cred = creditors.map(c => ({ ...c }));
+  const debt = debtors.map(d => ({ ...d }));
+
+  while (ci < cred.length && di < debt.length) {
+    const pay = Math.min(cred[ci].amt, -debt[di].amt);
+    if (pay > 0) transfers.push({ from: debt[di].name, to: cred[ci].name, amount: Math.round(pay) });
+    cred[ci].amt -= pay;
+    debt[di].amt += pay;
+    if (Math.abs(cred[ci].amt) < 1) ci++;
+    if (Math.abs(debt[di].amt) < 1) di++;
+  }
+
+  // โหลดข้อมูลบัญชี
+  const banks = loadBankData();
+
+  document.getElementById('settleTransfers').innerHTML = transfers.length
+    ? transfers.map(t => {
+        const bank = banks[t.to];
+        const bankStr = bank ? `<div style="font-size:11px;color:var(--gray);margin-top:4px">${bank.bank} · ${bank.number} 
+          <button onclick="copyText('${bank.number}')" style="background:var(--surface3);border:none;color:var(--green-bright);padding:2px 8px;border-radius:10px;font-size:10px;cursor:pointer;margin-left:4px">คัดลอก</button>
+        </div>` : '';
+        return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <span style="color:var(--red);font-weight:700">${t.from}</span>
+              <span style="color:var(--gray);margin:0 6px">→</span>
+              <span style="color:var(--green-bright);font-weight:700">${t.to}</span>
+            </div>
+            <div style="font-family:var(--font-display);font-size:22px;color:var(--gold)">${t.amount.toLocaleString()}</div>
+          </div>
+          ${bankStr}
+        </div>`;
+      }).join('')
+    : '<div style="color:var(--gray);text-align:center;padding:12px">ทุกคนเสมอกัน ไม่ต้องโอน</div>';
+
+  document.getElementById('settleResult').style.display = 'block';
+  document.getElementById('settleResult').scrollIntoView({ behavior: 'smooth' });
+}
+
+function closeSettlement() { document.getElementById('settlementModal').classList.remove('open'); }
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => showToast('คัดลอกแล้ว ✅'));
+}
+
+// ===== BANK INFO =====
+function loadBankData() {
+  try { return JSON.parse(localStorage.getItem('golfpro_banks') || '{}'); } catch(e) { return {}; }
+}
+
+function openBankModal() {
+  const banks = loadBankData();
+  renderBankList(banks);
+  // populate player select
+  const leaderboard = window._cachedLeaderboard || [];
+  const sel = document.getElementById('bankPlayerSelect');
+  sel.innerHTML = '<option value="">— เลือกผู้เล่น —</option>' +
+    leaderboard.map(p => `<option value="${p.name}">${p.name}</option>`).join('');
+  document.getElementById('bankModal').classList.add('open');
+}
+
+function renderBankList(banks) {
+  const el = document.getElementById('bankList');
+  const entries = Object.entries(banks);
+  el.innerHTML = entries.length
+    ? entries.map(([name, info]) => `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        <div>
+          <div style="font-weight:700">${name}</div>
+          <div style="font-size:12px;color:var(--gray)">${info.bank} · ${info.number}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="copyText('${info.number}')" style="background:var(--surface3);border:none;color:var(--green-bright);padding:6px 12px;border-radius:20px;font-size:12px;cursor:pointer">คัดลอก</button>
+          <button onclick="deleteBankInfo('${name}')" style="background:rgba(239,68,68,0.1);border:1px solid var(--red);color:var(--red);padding:6px 10px;border-radius:20px;font-size:12px;cursor:pointer">ลบ</button>
+        </div>
+      </div>`).join('')
+    : '<div style="color:var(--gray);font-size:13px;margin-bottom:12px">ยังไม่มีข้อมูลบัญชี</div>';
+}
+
+function saveBankInfo() {
+  const name = document.getElementById('bankPlayerSelect').value;
+  const bank = document.getElementById('bankName').value;
+  const number = document.getElementById('bankNumber').value.trim();
+  if (!name || !bank || !number) { showToast('กรอกข้อมูลให้ครบครับ', true); return; }
+  const banks = loadBankData();
+  banks[name] = { bank, number };
+  localStorage.setItem('golfpro_banks', JSON.stringify(banks));
+  renderBankList(banks);
+  showToast('✅ บันทึกข้อมูลบัญชีแล้ว');
+  document.getElementById('bankPlayerSelect').value = '';
+  document.getElementById('bankName').value = '';
+  document.getElementById('bankNumber').value = '';
+}
+
+function deleteBankInfo(name) {
+  const banks = loadBankData();
+  delete banks[name];
+  localStorage.setItem('golfpro_banks', JSON.stringify(banks));
+  renderBankList(banks);
+}
+
+function closeBankModal() { document.getElementById('bankModal').classList.remove('open'); }
+
+// ===== INIT =====
+window.onload = function() {
+  document.getElementById('matchDate').valueAsDate = new Date();
+  loadLeaderboard();
+
+  // ตรวจสอบว่ามี session ค้างอยู่ไหม
+  const session = restoreSession();
+  if (session) {
+    const savedTime = new Date(session.savedAt).toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit'});
+    if (confirm(`พบข้อมูลการแข่งที่กรอกค้างไว้ (${savedTime})\nต้องการกลับมาต่อไหมครับ?`)) {
+      // restore scores
+      scores = session.scores;
+      config = { ...config, ...session.config };
+      // ต้องโหลด players ก่อน แล้วค่อย restore
+      loadSetupPlayers().then(() => {
+        // เลือก players ที่ค้างไว้
+        session.players.forEach(name => {
+          const idx = allPlayers.findIndex(p => p.name === name);
+          if (idx >= 0) {
+            const el = document.getElementById('pi' + idx);
+            if (el) el.classList.add('selected');
+          }
+        });
+        // restore config UI
+        document.getElementById('matchDate').value = session.config.date || '';
+        selectRound(session.config.round || 1);
+        ['front','back'].forEach(type => selectCourse(type, session.config[type]));
+        buildCourse();
+        activePlayers = allPlayers.filter(p => session.players.includes(p.name));
+        document.getElementById('setupPhase').style.display = 'none';
+        document.getElementById('gamePhase').style.display = 'block';
+        renderHoleNav();
+        jumpTo(1);
+        showView('play', document.querySelector('.nav-item[onclick*="play"]'));
+        showToast('✅ กลับมาต่อจากที่ค้างไว้แล้วครับ');
+      });
+    } else {
+      clearSession();
+    }
+  }
+};
+
+// Load players when switching to play tab
+const origShowView = showView;
+window.showViewWithSetup = function(name, el) {
+  origShowView(name, el);
+  if (name === 'play' && allPlayers.length === 0) loadSetupPlayers();
+};
+document.querySelectorAll('.nav-item').forEach(btn => {
+  const orig = btn.getAttribute('onclick');
+  if (orig && orig.includes('play')) btn.setAttribute('onclick', orig.replace('showView', 'showViewWithSetup'));
+});
+
+// Service Worker registration
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
