@@ -866,23 +866,20 @@ body {
     </div>
 
     <!-- ส่วน 1: เงินพนัน -->
-    <div class="card-header" style="margin-bottom:8px">🎯 เงินพนันรวม (R1+R2)</div>
-    <div id="settleBet" style="margin-bottom:16px"></div>
+    <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;letter-spacing:1px">🎯 เงินพนัน</div>
+    <div id="settleBet" style="margin-bottom:16px;background:var(--surface2);border-radius:var(--radius-sm);padding:10px"></div>
 
-    <!-- ส่วน 2: ค่าน้ำ -->
-    <div class="card-header" style="margin-bottom:8px">🥤 ค่าน้ำ</div>
-
-    <!-- Round 1 -->
+    <!-- ส่วน 2: ค่าน้ำ R1 -->
+    <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;letter-spacing:1px">🥤 ค่าน้ำ ROUND 1</div>
     <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px">
-      <div style="font-weight:700;margin-bottom:8px;font-size:13px">Round 1</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div>
           <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
-          <input type="number" id="water1Amount" placeholder="0" class="form-input" style="padding:8px">
+          <input type="number" id="water1Amount" placeholder="0" class="form-input" style="padding:8px" oninput="calcSettlement()">
         </div>
         <div>
           <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
-          <select id="water1Advance" class="form-input" style="padding:8px">
+          <select id="water1Advance" class="form-input" style="padding:8px" onchange="calcSettlement()">
             <option value="">— เลือก —</option>
           </select>
         </div>
@@ -891,17 +888,17 @@ body {
       <div id="water1Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
 
-    <!-- Round 2 -->
-    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px" id="water2Section">
-      <div style="font-weight:700;margin-bottom:8px;font-size:13px">Round 2</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+    <!-- ส่วน 3: ค่าน้ำ R2 -->
+    <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;letter-spacing:1px">🥤 ค่าน้ำ ROUND 2</div>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:16px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
         <div>
           <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
-          <input type="number" id="water2Amount" placeholder="0" class="form-input" style="padding:8px">
+          <input type="number" id="water2Amount" placeholder="0" class="form-input" style="padding:8px" oninput="calcSettlement()">
         </div>
         <div>
           <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
-          <select id="water2Advance" class="form-input" style="padding:8px">
+          <select id="water2Advance" class="form-input" style="padding:8px" onchange="calcSettlement()">
             <option value="">— เลือก —</option>
           </select>
         </div>
@@ -910,15 +907,15 @@ body {
       <div id="water2Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
     </div>
 
-    <button class="btn btn-primary" onclick="calcSettlement()" style="margin-bottom:12px">⚡ คำนวณสรุปเงิน</button>
-
-    <!-- ส่วน 3: สรุปโอนเงิน -->
-    <div id="settleResult" style="display:none">
-      <div class="card-header" style="margin-bottom:8px">📋 สรุปโอนเงิน</div>
-      <div id="settleTransfers"></div>
+    <!-- ส่วน 4: สรุปค่าใช้จ่ายรวม + โอนเงิน (live) -->
+    <div id="settleResult">
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;letter-spacing:1px">📊 สรุปค่าใช้จ่ายรวมต่อคน</div>
+      <div id="settleNetList" style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px"></div>
+      <div style="font-size:11px;font-weight:700;color:var(--gray);margin-bottom:6px;letter-spacing:1px">📋 สรุปโอนเงิน</div>
+      <div id="settleTransfers" style="margin-bottom:12px"></div>
     </div>
 
-    <button class="btn btn-secondary" onclick="closeSettlement()" style="margin-top:10px">ปิด</button>
+    <button class="btn btn-secondary" onclick="closeSettlement()">ปิด</button>
   </div>
 </div>
 
@@ -1727,8 +1724,14 @@ async function saveBaseHCP() {
 let settlementData = { bets: {}, allPlayers: [] };
 
 async function openSettlement() {
-  // ดึงประวัติวันนี้เพื่อรวมเงินพนัน R1+R2
   const today = document.getElementById('matchDate').value;
+
+  // โหลด leaderboard ถ้า cache ว่าง
+  if (!window._cachedLeaderboard || !window._cachedLeaderboard.length) {
+    const lb = await gasCall('getLeaderboard');
+    if (Array.isArray(lb)) window._cachedLeaderboard = lb;
+  }
+
   const history = await gasCall('getHistory');
   const dayRows = Array.isArray(history) ? history.filter(r => String(r.date||'').split('T')[0] === today) : [];
 
@@ -1737,47 +1740,48 @@ async function openSettlement() {
   dayRows.forEach(r => { bets[r.name] = (bets[r.name]||0) + Number(r.total||0); });
   settlementData.bets = bets;
 
-  // รวมชื่อผู้เล่นทั้งหมดในวันนี้
-  const allNames = [...new Set(dayRows.map(r => r.name))];
+  // ดึงชื่อจาก leaderboard cache เป็นหลัก
+  let allNames = (window._cachedLeaderboard||[]).map(p => p.name);
+
+  // ถ้า activePlayers มีข้อมูล (กำลังเล่นอยู่) ให้ใช้แทน
+  if (activePlayers.length) allNames = activePlayers.map(p => p.name);
+
+  // เพิ่มชื่อจาก history วันนี้ที่อาจไม่อยู่ใน list
+  dayRows.forEach(r => { if (!allNames.includes(r.name)) allNames.push(r.name); });
   settlementData.allPlayers = allNames;
 
   // แสดงเงินพนัน
   document.getElementById('settleBet').innerHTML = allNames.length
     ? allNames.map(n => {
         const t = bets[n]||0;
-        return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+        return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
           <span style="font-weight:700">${n}</span>
           <span style="font-family:var(--font-display);font-size:20px;color:${t>=0?'var(--green-bright)':'var(--red)'}">${t>0?'+':''}${t.toLocaleString()}</span>
         </div>`;
       }).join('')
-    : '<div style="color:var(--gray);font-size:13px">ไม่พบข้อมูลการแข่งวันนี้</div>';
+    : '<div style="color:var(--gray);font-size:13px">ไม่พบข้อมูล</div>';
 
-  // Populate dropdowns และ checkboxes
-  ['water1Advance','water2Advance','bankPlayerSelect'].forEach(id => {
-    const sel = document.getElementById(id);
-    if (!sel) return;
-    sel.innerHTML = '<option value="">— เลือก —</option>' + allNames.map(n => `<option value="${n}">${n}</option>`).join('');
-  });
+  // Populate dropdowns
+  const opts = '<option value="">— เลือก —</option>' + allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+  document.getElementById('water1Advance').innerHTML = opts;
+  document.getElementById('water2Advance').innerHTML = opts;
 
-  ['water1Players','water2Players'].forEach((id, ri) => {
+  // Checkboxes ผู้เล่นร่วมหาร
+  ['water1Players','water2Players'].forEach(id => {
     document.getElementById(id).innerHTML = allNames.map(n => `
       <label style="display:flex;align-items:center;gap:6px;background:var(--surface3);padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px">
-        <input type="checkbox" value="${n}" checked style="accent-color:var(--green-main)"> ${n}
+        <input type="checkbox" value="${n}" checked style="accent-color:var(--green-main)" onchange="calcSettlement()"> ${n}
       </label>`).join('');
   });
 
-  // ซ่อน R2 ถ้าเล่น Round เดียว
-  const hasR2 = dayRows.some(r => String(r.round||'').includes('2'));
-  document.getElementById('water2Section').style.display = hasR2 ? 'block' : 'none';
-
-  document.getElementById('settleResult').style.display = 'none';
+  calcSettlement();
   document.getElementById('settlementModal').classList.add('open');
 }
 
 function calcSettlement() {
   const { bets, allPlayers } = settlementData;
+  if (!allPlayers.length) return;
 
-  // คำนวณค่าน้ำแต่ละ Round
   function calcWater(amountId, advanceId, playersId) {
     const amount = Number(document.getElementById(amountId)?.value || 0);
     const advance = document.getElementById(advanceId)?.value;
@@ -1793,55 +1797,59 @@ function calcSettlement() {
   const w1 = calcWater('water1Amount','water1Advance','water1Players');
   const w2 = calcWater('water2Amount','water2Advance','water2Players');
 
-  // รวมทุกอย่าง: เงินพนัน + ค่าน้ำ R1 + ค่าน้ำ R2
+  // รวมทุกอย่าง
   const net = {};
   allPlayers.forEach(n => { net[n] = (bets[n]||0); });
-  [w1, w2].forEach(w => { Object.entries(w).forEach(([n, v]) => { net[n] = (net[n]||0) + v; }); });
+  [w1, w2].forEach(w => Object.entries(w).forEach(([n, v]) => { net[n] = (net[n]||0) + v; }));
 
-  // คำนวณโอนเงินขั้นต่ำ (debt settlement algorithm)
-  const balances = Object.entries(net).map(([name, amt]) => ({ name, amt }));
-  const creditors = balances.filter(b => b.amt > 0).sort((a,b) => b.amt - a.amt);
-  const debtors = balances.filter(b => b.amt < 0).sort((a,b) => a.amt - b.amt);
+  // แสดงสรุปค่าใช้จ่ายรวมต่อคน
+  document.getElementById('settleNetList').innerHTML = allPlayers.map(n => {
+    const v = net[n]||0;
+    const bet = bets[n]||0;
+    const water = (w1[n]||0) + (w2[n]||0);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div>
+        <div style="font-weight:700">${n}</div>
+        <div style="font-size:10px;color:var(--gray)">พนัน ${bet>0?'+':''}${bet.toLocaleString()} &nbsp;|&nbsp; ค่าน้ำ ${water>0?'+':''}${water.toLocaleString()}</div>
+      </div>
+      <div style="font-family:var(--font-display);font-size:22px;color:${v>=0?'var(--green-bright)':'var(--red)'}">${v>0?'+':''}${v.toLocaleString()}</div>
+    </div>`;
+  }).join('');
 
+  // คำนวณโอนเงินขั้นต่ำ
+  const balances = allPlayers.map(n => ({ name: n, amt: net[n]||0 }));
+  const cred = balances.filter(b => b.amt > 0).sort((a,b) => b.amt-a.amt).map(b => ({...b}));
+  const debt = balances.filter(b => b.amt < 0).sort((a,b) => a.amt-b.amt).map(b => ({...b}));
   const transfers = [];
   let ci = 0, di = 0;
-  const cred = creditors.map(c => ({ ...c }));
-  const debt = debtors.map(d => ({ ...d }));
-
   while (ci < cred.length && di < debt.length) {
     const pay = Math.min(cred[ci].amt, -debt[di].amt);
-    if (pay > 0) transfers.push({ from: debt[di].name, to: cred[ci].name, amount: Math.round(pay) });
-    cred[ci].amt -= pay;
-    debt[di].amt += pay;
+    if (pay >= 1) transfers.push({ from: debt[di].name, to: cred[ci].name, amount: Math.round(pay) });
+    cred[ci].amt -= pay; debt[di].amt += pay;
     if (Math.abs(cred[ci].amt) < 1) ci++;
     if (Math.abs(debt[di].amt) < 1) di++;
   }
 
-  // โหลดข้อมูลบัญชี
   const banks = loadBankData();
-
   document.getElementById('settleTransfers').innerHTML = transfers.length
     ? transfers.map(t => {
         const bank = banks[t.to];
-        const bankStr = bank ? `<div style="font-size:11px;color:var(--gray);margin-top:4px">${bank.bank} · ${bank.number} 
-          <button onclick="copyText('${bank.number}')" style="background:var(--surface3);border:none;color:var(--green-bright);padding:2px 8px;border-radius:10px;font-size:10px;cursor:pointer;margin-left:4px">คัดลอก</button>
-        </div>` : '';
+        const bankStr = bank
+          ? `<div style="font-size:11px;color:var(--gray);margin-top:4px">${bank.bank} · ${bank.number}
+              <button onclick="copyText('${bank.number}')" style="background:var(--surface3);border:none;color:var(--green-bright);padding:2px 8px;border-radius:10px;font-size:10px;cursor:pointer;margin-left:4px">คัดลอก</button>
+            </div>` : '';
         return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px">
           <div style="display:flex;justify-content:space-between;align-items:center">
-            <div>
+            <div style="font-size:14px">
               <span style="color:var(--red);font-weight:700">${t.from}</span>
               <span style="color:var(--gray);margin:0 6px">→</span>
               <span style="color:var(--green-bright);font-weight:700">${t.to}</span>
             </div>
-            <div style="font-family:var(--font-display);font-size:22px;color:var(--gold)">${t.amount.toLocaleString()}</div>
-          </div>
-          ${bankStr}
+            <div style="font-family:var(--font-display);font-size:24px;color:var(--gold)">${t.amount.toLocaleString()}</div>
+          </div>${bankStr}
         </div>`;
       }).join('')
-    : '<div style="color:var(--gray);text-align:center;padding:12px">ทุกคนเสมอกัน ไม่ต้องโอน</div>';
-
-  document.getElementById('settleResult').style.display = 'block';
-  document.getElementById('settleResult').scrollIntoView({ behavior: 'smooth' });
+    : '<div style="color:var(--gray);text-align:center;padding:12px;font-size:13px">ทุกคนเสมอกัน ไม่ต้องโอน</div>';
 }
 
 function closeSettlement() { document.getElementById('settlementModal').classList.remove('open'); }
