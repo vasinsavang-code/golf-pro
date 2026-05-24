@@ -774,6 +774,13 @@ body {
   </div>
 </div>
 
+<div class="view" id="view-live">
+  <div class="section-title">🔴 LIVE SCORE</div>
+  <div class="section-sub" id="liveSubtitle">อัพเดทอัตโนมัติทุก 20 วินาที</div>
+  <div id="liveContent"><div class="loading"><div class="spinner"></div><span>กำลังโหลด...</span></div></div>
+  <button class="btn btn-secondary" style="margin-top:8px" onclick="loadLiveScore()">🔄 รีเฟรชทันที</button>
+</div>
+
 <!-- 3. HISTORY -->
 <div class="view" id="view-history">
   <div class="section-title">MATCH HISTORY</div>
@@ -816,6 +823,10 @@ body {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10,8 16,12 10,16 10,8" fill="currentColor"/></svg>
     <span class="nav-label">เล่น</span>
   </button>
+  <button class="nav-item" id="liveNavBtn" onclick="showView('live', this)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3" fill="currentColor"/><path d="M8.5 8.5a5 5 0 000 7M15.5 8.5a5 5 0 010 7M5 5a9.5 9.5 0 000 14M19 5a9.5 9.5 0 010 14"/></svg>
+    <span class="nav-label">Live</span>
+  </button>
   <button class="nav-item" onclick="showView('history', this)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
     <span class="nav-label">ประวัติ</span>
@@ -830,7 +841,92 @@ body {
   </button>
 </div>
 
-<!-- BILL MODAL -->
+<!-- END OF ROUND MODAL -->
+<div class="modal-overlay" id="endRoundModal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div style="text-align:center;padding:8px 0 16px">
+      <div style="font-size:40px;margin-bottom:8px">⛳</div>
+      <div style="font-family:var(--font-display);font-size:28px;color:var(--green-bright)" id="endRoundTitle">จบ Round 1</div>
+      <div style="font-size:13px;color:var(--gray);margin-top:6px">บันทึกผลเรียบร้อยแล้ว</div>
+    </div>
+    <button class="btn btn-primary" onclick="continueRound2()" style="margin-bottom:10px">
+      ▶️ เล่น Round 2 ต่อ
+    </button>
+    <button class="btn btn-gold" onclick="goToEndOfDay()">
+      🏁 จบวันนี้ (ไม่เล่น R2)
+    </button>
+    <button class="btn btn-secondary" onclick="closeEndRoundModal()" style="margin-top:8px">
+      ปิด
+    </button>
+  </div>
+</div>
+
+<!-- END OF DAY SUMMARY MODAL -->
+<div class="modal-overlay" id="endDayModal">
+  <div class="modal" style="max-height:90vh;overflow-y:auto">
+    <div class="modal-handle"></div>
+    <div style="font-family:var(--font-display);font-size:26px;color:var(--green-bright);margin-bottom:4px">🏁 สรุปจบวัน</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:16px" id="endDayDate"></div>
+
+    <!-- สรุปเงินพนัน -->
+    <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;margin-bottom:6px">🎯 เงินพนันรวมทั้งวัน</div>
+    <div id="endDayBets" style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:14px"></div>
+
+    <!-- ค่าน้ำ R1 -->
+    <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;margin-bottom:6px">🥤 ค่าน้ำ Round 1</div>
+    <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
+          <input type="number" id="eodWater1Amount" placeholder="0" class="form-input" style="padding:8px" oninput="calcEndOfDay()">
+        </div>
+        <div>
+          <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
+          <select id="eodWater1Advance" class="form-input" style="padding:8px" onchange="calcEndOfDay()">
+            <option value="">— เลือก —</option>
+          </select>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--gray);margin-bottom:6px">คนที่ร่วมหาร R1</div>
+      <div id="eodWater1Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+    </div>
+
+    <!-- ค่าน้ำ R2 -->
+    <div id="eodWater2Section">
+      <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;margin-bottom:6px">🥤 ค่าน้ำ Round 2</div>
+      <div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div>
+            <div style="font-size:11px;color:var(--gray);margin-bottom:4px">ค่าน้ำรวม (บาท)</div>
+            <input type="number" id="eodWater2Amount" placeholder="0" class="form-input" style="padding:8px" oninput="calcEndOfDay()">
+          </div>
+          <div>
+            <div style="font-size:11px;color:var(--gray);margin-bottom:4px">คนที่ Advance</div>
+            <select id="eodWater2Advance" class="form-input" style="padding:8px" onchange="calcEndOfDay()">
+              <option value="">— เลือก —</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--gray);margin-bottom:6px">คนที่ร่วมหาร R2</div>
+        <div id="eodWater2Players" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
+    </div>
+
+    <!-- สรุปรวม Live -->
+    <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;margin-bottom:6px">📊 สรุปค่าใช้จ่ายรวมต่อคน</div>
+    <div id="eodNetList" style="background:var(--surface2);border-radius:var(--radius-sm);padding:10px;margin-bottom:12px"></div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;margin-bottom:6px">📋 สรุปโอนเงิน</div>
+    <div id="eodTransfers" style="margin-bottom:14px"></div>
+
+    <!-- ปุ่มอัพเดทอันดับ -->
+    <button class="btn btn-gold" id="eodUpdateBtn" onclick="eodUpdateRanking()">
+      🏆 อัพเดทอันดับเงินและ HCP
+    </button>
+    <button class="btn btn-secondary" onclick="closeEndDayModal()" style="margin-top:8px">ปิด</button>
+  </div>
+</div>
 <div class="modal-overlay" id="billModal">
   <div class="modal">
     <div class="modal-handle"></div>
@@ -1016,10 +1112,12 @@ function showView(name, el) {
   document.getElementById('view-' + name).classList.add('active');
   if (el) el.classList.add('active');
 
+  if (liveInterval) { clearInterval(liveInterval); liveInterval = null; }
   if (name === 'home') loadLeaderboard();
   if (name === 'history') loadHistory();
   if (name === 'balance') loadBalance();
   if (name === 'stats') loadStatsPlayers();
+  if (name === 'live') { loadLiveScore(); liveInterval = setInterval(loadLiveScore, 20000); }
 }
 
 // ===== TOAST =====
@@ -1599,7 +1697,7 @@ async function saveLiveScore() {
   btn.disabled = false; btn.textContent = '📡 อัพเดทสกอร์ Live';
 }
 
-// ===== SAVE MATCH (ข้อ 3+4) — Save ผล แต่ไม่อัพเดท Balance =====
+// ===== SAVE MATCH — Save ผล แต่ไม่อัพเดท Balance =====
 async function saveMatch() {
   if (isSaved) { showToast('บันทึกไปแล้วครับ'); return; }
   const btn = document.getElementById('saveBtn');
@@ -1610,10 +1708,12 @@ async function saveMatch() {
   if (result && !result.error) {
     isSaved = true;
     clearSession();
-    showToast('✅ บันทึกผลเรียบร้อย! (ยังไม่อัพเดทอันดับ)');
     btn.textContent = '✅ บันทึกแล้ว';
     document.getElementById('updateRankBtn').style.display = 'block';
     document.getElementById('settleBtn').style.display = 'block';
+    closeBill();
+    // แสดง End of Round popup
+    showEndRoundModal();
   } else {
     showToast('เกิดข้อผิดพลาด: ' + (result?.error||'unknown'), true);
     btn.disabled = false; btn.textContent = '💾 SAVE';
@@ -1915,6 +2015,240 @@ function deleteBankInfo(name) {
 }
 
 function closeBankModal() { document.getElementById('bankModal').classList.remove('open'); }
+
+// ===== END OF ROUND MODAL =====
+function showEndRoundModal() {
+  const r = config.round;
+  document.getElementById('endRoundTitle').textContent = `จบ Round ${r} ✅`;
+  // ถ้าเล่น R2 แล้วให้ข้ามไปหน้าสรุปจบวันเลย
+  if (r === 2) {
+    goToEndOfDay();
+    return;
+  }
+  document.getElementById('endRoundModal').classList.add('open');
+}
+
+function closeEndRoundModal() {
+  document.getElementById('endRoundModal').classList.remove('open');
+}
+
+function continueRound2() {
+  closeEndRoundModal();
+  // Reset สำหรับ Round 2
+  selectRound(2);
+  // Reset scores และ isSaved
+  scores = {};
+  [...Array(18)].forEach((_,i) => { scores[i+1] = {}; activePlayers.forEach(p => scores[i+1][p.name] = ''); });
+  isSaved = false;
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 SAVE'; }
+  document.getElementById('updateRankBtn').style.display = 'none';
+  document.getElementById('settleBtn').style.display = 'none';
+  renderHoleNav();
+  jumpTo(1);
+  showToast('เริ่ม Round 2 ได้เลยครับ 🏌️');
+}
+
+// ===== END OF DAY MODAL =====
+let eodData = { bets: {}, allPlayers: [], hasR2: false };
+
+async function goToEndOfDay() {
+  closeEndRoundModal();
+  const today = document.getElementById('matchDate').value;
+
+  // โหลด history + leaderboard
+  const [history, leaderboard] = await Promise.all([
+    gasCall('getHistory'),
+    gasCall('getLeaderboard')
+  ]);
+  if (!Array.isArray(history)) { showToast('โหลดข้อมูลไม่ได้', true); return; }
+
+  // รวมเงินพนันทั้งวัน
+  const bets = {};
+  const dayRows = history.filter(r => String(r.date||'').split('T')[0] === today);
+  dayRows.forEach(r => { bets[r.name] = (bets[r.name]||0) + Number(r.total||0); });
+
+  // รวมชื่อ
+  let allNames = activePlayers.length
+    ? activePlayers.map(p => p.name)
+    : (leaderboard||[]).map(p => p.name);
+  dayRows.forEach(r => { if (!allNames.includes(r.name)) allNames.push(r.name); });
+
+  const hasR2 = dayRows.some(r => String(r.round||'').includes('2'));
+  eodData = { bets, allPlayers: allNames, hasR2, leaderboard: leaderboard||[] };
+
+  // แสดงเงินพนัน
+  document.getElementById('endDayDate').textContent = today;
+  document.getElementById('endDayBets').innerHTML = allNames.map(n => {
+    const t = bets[n]||0;
+    return `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <span style="font-weight:700">${n}</span>
+      <span style="font-family:var(--font-display);font-size:20px;color:${t>=0?'var(--green-bright)':'var(--red)'}">${t>0?'+':''}${t.toLocaleString()}</span>
+    </div>`;
+  }).join('');
+
+  // Populate dropdowns + checkboxes
+  const opts = '<option value="">— เลือก —</option>' + allNames.map(n => `<option value="${n}">${n}</option>`).join('');
+  document.getElementById('eodWater1Advance').innerHTML = opts;
+  document.getElementById('eodWater2Advance').innerHTML = opts;
+
+  ['eodWater1Players','eodWater2Players'].forEach(id => {
+    document.getElementById(id).innerHTML = allNames.map(n => `
+      <label style="display:flex;align-items:center;gap:6px;background:var(--surface3);padding:6px 10px;border-radius:20px;cursor:pointer;font-size:13px">
+        <input type="checkbox" value="${n}" checked style="accent-color:var(--green-main)" onchange="calcEndOfDay()"> ${n}
+      </label>`).join('');
+  });
+
+  // ซ่อน R2 ถ้าไม่มี
+  document.getElementById('eodWater2Section').style.display = hasR2 ? 'block' : 'none';
+
+  calcEndOfDay();
+  document.getElementById('endDayModal').classList.add('open');
+}
+
+function calcEndOfDay() {
+  const { bets, allPlayers } = eodData;
+  if (!allPlayers.length) return;
+
+  function calcWater(amountId, advanceId, playersId) {
+    const amount = Number(document.getElementById(amountId)?.value || 0);
+    const advance = document.getElementById(advanceId)?.value;
+    const checked = [...document.querySelectorAll(`#${playersId} input:checked`)].map(i => i.value);
+    if (!amount || !advance || !checked.length) return {};
+    const share = Math.round(amount / checked.length);
+    const result = {};
+    checked.forEach(n => { result[n] = (result[n]||0) - share; });
+    result[advance] = (result[advance]||0) + amount;
+    return result;
+  }
+
+  const w1 = calcWater('eodWater1Amount','eodWater1Advance','eodWater1Players');
+  const w2 = calcWater('eodWater2Amount','eodWater2Advance','eodWater2Players');
+
+  const net = {};
+  allPlayers.forEach(n => { net[n] = (bets[n]||0); });
+  [w1, w2].forEach(w => Object.entries(w).forEach(([n,v]) => { net[n] = (net[n]||0) + v; }));
+
+  // สรุปรวมต่อคน
+  document.getElementById('eodNetList').innerHTML = allPlayers.map(n => {
+    const v = net[n]||0;
+    const bet = bets[n]||0;
+    const water = (w1[n]||0) + (w2[n]||0);
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.06)">
+      <div>
+        <div style="font-weight:700">${n}</div>
+        <div style="font-size:10px;color:var(--gray)">พนัน ${bet>0?'+':''}${bet.toLocaleString()} | ค่าน้ำ ${water>0?'+':''}${water.toLocaleString()}</div>
+      </div>
+      <div style="font-family:var(--font-display);font-size:22px;color:${v>=0?'var(--green-bright)':'var(--red)'}">${v>0?'+':''}${v.toLocaleString()}</div>
+    </div>`;
+  }).join('');
+
+  // สรุปโอนเงิน
+  const balances = allPlayers.map(n => ({ name:n, amt: net[n]||0 }));
+  const cred = balances.filter(b=>b.amt>0).sort((a,b)=>b.amt-a.amt).map(b=>({...b}));
+  const debt = balances.filter(b=>b.amt<0).sort((a,b)=>a.amt-b.amt).map(b=>({...b}));
+  const transfers = [];
+  let ci=0, di=0;
+  while (ci<cred.length && di<debt.length) {
+    const pay = Math.min(cred[ci].amt, -debt[di].amt);
+    if (pay>=1) transfers.push({ from:debt[di].name, to:cred[ci].name, amount:Math.round(pay) });
+    cred[ci].amt -= pay; debt[di].amt += pay;
+    if (Math.abs(cred[ci].amt)<1) ci++;
+    if (Math.abs(debt[di].amt)<1) di++;
+  }
+
+  const banks = loadBankData();
+  document.getElementById('eodTransfers').innerHTML = transfers.length
+    ? transfers.map(t => {
+        const bank = banks[t.to];
+        const bankStr = bank ? `<div style="font-size:11px;color:var(--gray);margin-top:4px">${bank.bank} · ${bank.number}
+          <button onclick="copyText('${bank.number}')" style="background:var(--surface3);border:none;color:var(--green-bright);padding:2px 8px;border-radius:10px;font-size:10px;cursor:pointer;margin-left:4px">คัดลอก</button>
+        </div>` : '';
+        return `<div style="background:var(--surface2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div><span style="color:var(--red);font-weight:700">${t.from}</span><span style="color:var(--gray);margin:0 6px">→</span><span style="color:var(--green-bright);font-weight:700">${t.to}</span></div>
+            <div style="font-family:var(--font-display);font-size:24px;color:var(--gold)">${t.amount.toLocaleString()}</div>
+          </div>${bankStr}
+        </div>`;
+      }).join('')
+    : '<div style="color:var(--gray);text-align:center;padding:12px;font-size:13px">ทุกคนเสมอกัน ไม่ต้องโอน</div>';
+}
+
+async function eodUpdateRanking() {
+  const btn = document.getElementById('eodUpdateBtn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังอัพเดท...';
+  const today = document.getElementById('matchDate').value;
+  const [history, leaderboard] = await Promise.all([gasCall('getHistory'), gasCall('getLeaderboard')]);
+  if (!Array.isArray(history)||!Array.isArray(leaderboard)) {
+    showToast('โหลดข้อมูลไม่ได้', true);
+    btn.disabled = false; btn.textContent = '🏆 อัพเดทอันดับเงินและ HCP';
+    return;
+  }
+  const dayTotals = {};
+  history.filter(r => String(r.date||'').split('T')[0] === today)
+    .forEach(r => { dayTotals[r.name] = (dayTotals[r.name]||0) + Number(r.total||0); });
+  const upBal = Object.entries(dayTotals).map(([name, dayTotal]) => {
+    const player = leaderboard.find(p => p.name === name);
+    return { name, newBal: Number(player?.bal||0) + dayTotal };
+  });
+  if (!upBal.length) { showToast('ไม่พบข้อมูลวันนี้', true); btn.disabled=false; btn.textContent='🏆 อัพเดทอันดับเงินและ HCP'; return; }
+  const result = await gasCall('updateBalances', { updatedBalances: upBal });
+  if (result && !result.error) {
+    showToast('🏆 อัพเดทอันดับและ HCP เรียบร้อย!');
+    btn.textContent = '✅ อัพเดทแล้ว';
+    btn.disabled = true;
+    setTimeout(closeEndDayModal, 1500);
+  } else {
+    showToast('เกิดข้อผิดพลาด: '+(result?.error||'unknown'), true);
+    btn.disabled=false; btn.textContent='🏆 อัพเดทอันดับเงินและ HCP';
+  }
+}
+
+function closeEndDayModal() { document.getElementById('endDayModal').classList.remove('open'); }
+
+// ===== LIVE SCORE VIEW =====
+let liveInterval = null;
+
+async function loadLiveScore() {
+  const el = document.getElementById('liveContent');
+  const result = await gasCall('getLive');
+  if (!result || result.error || !result.players || !result.players.length) {
+    el.innerHTML = '<div class="empty" style="padding:40px 0;text-align:center"><div style="font-size:40px;margin-bottom:12px">📡</div><div style="color:var(--gray)">ยังไม่มีข้อมูล Live</div><div style="font-size:12px;color:var(--gray);margin-top:6px">กดปุ่ม 📡 อัพเดทสกอร์ Live ขณะเล่น</div></div>';
+    return;
+  }
+  const updatedAt = result.updatedAt ? new Date(result.updatedAt).toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '–';
+  document.getElementById('liveSubtitle').textContent = `อัพเดทล่าสุด ${updatedAt} · หลุมที่ ${result.hole||'–'}`;
+
+  const holes = [...Array(18)].map((_,i)=>i+1);
+  const playerRows = result.players.map(p => {
+    const cells = holes.map(h => {
+      const v = p.scores[h];
+      return `<td style="text-align:center;padding:4px 3px;font-family:var(--font-display);font-size:14px;${v?'color:#fff':'color:rgba(255,255,255,0.2)'}">${v||'·'}</td>`;
+    }).join('');
+    const filled = holes.filter(h => p.scores[h] !== '' && p.scores[h] !== undefined && p.scores[h] !== null).length;
+    const tot = holes.reduce((s,h) => s + (Number(p.scores[h])||0), 0);
+    return `<tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
+      <td style="padding:8px 6px;font-weight:700;white-space:nowrap">${p.name}</td>
+      ${cells}
+      <td style="text-align:center;padding:4px 6px;font-family:var(--font-display);font-size:16px;color:var(--green-bright)">${filled>0?tot:'–'}</td>
+    </tr>`;
+  }).join('');
+
+  el.innerHTML = `
+    <div style="font-family:var(--font-display);font-size:13px;color:var(--gray);margin-bottom:8px">${result.date||''} · ${result.round||''}</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+      <table style="width:100%;border-collapse:collapse;font-size:12px;min-width:600px">
+        <thead>
+          <tr style="background:var(--surface3)">
+            <th style="padding:6px;text-align:left;color:var(--gray)">ผู้เล่น</th>
+            ${holes.map(h=>`<th style="text-align:center;padding:4px 3px;color:var(--gray);font-size:11px">${h}</th>`).join('')}
+            <th style="text-align:center;padding:4px 6px;color:var(--gray)">TOT</th>
+          </tr>
+        </thead>
+        <tbody>${playerRows}</tbody>
+      </table>
+    </div>`;
+}
 
 // ===== INIT =====
 window.onload = function() {
