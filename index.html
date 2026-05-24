@@ -1962,7 +1962,27 @@ function copyText(text) {
 
 // ===== BANK INFO =====
 function loadBankData() {
-  try { return JSON.parse(localStorage.getItem('golfpro_banks') || '{}'); } catch(e) { return {}; }
+  const defaultBanks = {
+    'O':    { bank: 'ไทยพาณิชย์ (SCB)', number: '4029870240' },
+    'Rerk': { bank: 'ไทยพาณิชย์ (SCB)', number: '2732205465' },
+    'Koy':  { bank: 'กสิกรไทย (KBank)', number: '6272137844' },
+    'Ron':  { bank: 'กรุงเทพ (BBL)',     number: '1890536202' },
+    'Tick': { bank: 'กสิกรไทย (KBank)', number: '7622015751' },
+    'Jeaw': { bank: 'ไทยพาณิชย์ (SCB)', number: '1272244729' },
+    'Eaow': { bank: 'ทหารไทยธนชาต (TTB)', number: '0212435796' },
+    'Vasin':{ bank: 'ไทยพาณิชย์ (SCB)', number: '4013857953' },
+    'Lop':  { bank: 'กสิกรไทย (KBank)', number: '0642735152' },
+    'Gunn': { bank: 'กสิกรไทย (KBank)', number: '7992433643' },
+  };
+  try {
+    const saved = localStorage.getItem('golfpro_banks');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // Merge: saved ทับ default
+      return { ...defaultBanks, ...parsed };
+    }
+  } catch(e) {}
+  return defaultBanks;
 }
 
 function openBankModal() {
