@@ -1446,6 +1446,8 @@ function startMatch() {
   if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 SAVE'; }
   const rankBtn = document.getElementById('updateRankBtn');
   if (rankBtn) rankBtn.style.display = 'none';
+  const settleBtn = document.getElementById('settleBtn');
+  if (settleBtn) settleBtn.style.display = 'none';
   document.getElementById('setupPhase').style.display = 'none';
   document.getElementById('gamePhase').style.display = 'block';
   renderHoleNav();
@@ -2034,19 +2036,17 @@ function closeEndRoundModal() {
 
 function continueRound2() {
   closeEndRoundModal();
-  // Reset สำหรับ Round 2
   selectRound(2);
-  // Reset scores และ isSaved
-  scores = {};
-  [...Array(18)].forEach((_,i) => { scores[i+1] = {}; activePlayers.forEach(p => scores[i+1][p.name] = ''); });
+  // กลับไปหน้า Setup เพื่อเลือก Course ใหม่ได้
+  // แต่ยังคงผู้เล่นและวันที่เดิม
+  document.getElementById('setupPhase').style.display = '';
+  document.getElementById('gamePhase').style.display = 'none';
   isSaved = false;
   const saveBtn = document.getElementById('saveBtn');
   if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 SAVE'; }
   document.getElementById('updateRankBtn').style.display = 'none';
   document.getElementById('settleBtn').style.display = 'none';
-  renderHoleNav();
-  jumpTo(1);
-  showToast('เริ่ม Round 2 ได้เลยครับ 🏌️');
+  showToast('เลือก Course สำหรับ Round 2 ได้เลยครับ 🏌️');
 }
 
 // ===== END OF DAY MODAL =====
