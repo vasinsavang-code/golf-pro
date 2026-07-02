@@ -1548,7 +1548,7 @@ function renderScoreFields() {
       </div>
       <div class="score-input-wrap">
         <input type="number" inputmode="numeric" class="score-input"
-          value="${gVal}"
+          value="${gVal}" data-player="${p.name}"
           oninput="updateScore(${currentHole},'${p.name}',this.value)">
         <div class="net-label">Net: ${nVal}</div>
       </div>
@@ -1563,9 +1563,20 @@ function updateScore(h, name, val) {
   if (btn) { btn.style.display = allFilled ? 'block' : 'none'; }
   const hBtn = document.getElementById('hn'+h);
   if (hBtn && allFilled && !hBtn.classList.contains('active')) hBtn.classList.add('done');
-  // Auto-save ลง localStorage ทุกครั้งที่กรอก
   autoSaveSession();
+  // จำ focus และ cursor position ก่อน re-render
+  const focused = document.activeElement;
+  const focusedName = focused?.dataset?.player;
+  const selStart = focused?.selectionStart;
   renderScoreFields();
+  // Restore focus หลัง re-render
+  if (focusedName) {
+    const el = document.querySelector(`.score-input[data-player="${focusedName}"]`);
+    if (el) {
+      el.focus();
+      try { el.setSelectionRange(el.value.length, el.value.length); } catch(e) {}
+    }
+  }
 }
 
 function autoSaveSession() {
